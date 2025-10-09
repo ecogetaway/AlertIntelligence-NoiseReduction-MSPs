@@ -1,0 +1,52 @@
+workflow:
+  id: msp-alert-correlation
+  name: MSP Alert Correlation with AI Agents
+  description: Correlate related alerts using AWS Bedrock AgentCore and Strands Agents for intelligent grouping and incident creation
+  strategy: parallel
+  triggers:
+    - type: alert
+      conditions:
+        - severity: high
+        - severity: critical
+  actions:
+    - name: correlate-with-ai
+      provider:
+        type: bedrock-agentcore
+        with:
+          agent: alert_correlation_agent
+          model: claude-3-sonnet
+          parameters:
+            correlation_threshold: 0.7
+            time_window: 1800  # 30 minutes
+            include_context: true
+    - name: enrich-alerts
+      provider:
+        type: bedrock-agentcore
+        with:
+          agent: alert_enrichment_agent
+          model: claude-3-sonnet
+          parameters:
+            enrichment_types: ["context", "similar_incidents", "recommendations"]
+    - name: create-incident-if-correlated
+      provider:
+        type: strands-agent
+        with:
+          agent: incident_creation_agent
+          conditions:
+            - correlation_count: "> 2"
+            - confidence: "> 0.8"
+          parameters:
+            auto_assign: true
+            priority_calculation: "ai_based"
+    - name: notify-stakeholders
+      provider:
+        type: slack
+        with:
+          channel: "#msp-alerts"
+          message: |
+            🚨 New correlated incident created
+            **Incident ID:** {{ incident.id }}
+            **Alerts:** {{ alerts | length }}
+            **Confidence:** {{ correlation.confidence }}
+            **AI Summary:** {{ ai_summary }}
+          condition: "{{ incident.created }}"

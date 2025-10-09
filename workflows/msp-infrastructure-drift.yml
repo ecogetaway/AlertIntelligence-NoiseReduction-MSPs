@@ -1,0 +1,75 @@
+workflow:
+  id: msp-infrastructure-drift
+  name: Infrastructure Drift Detection and Remediation
+  description: Detect infrastructure drift using Strands Agents and automatically remediate common issues
+  strategy: parallel
+  triggers:
+    - type: schedule
+      cron: "0 */6 * * *"  # Every 6 hours
+    - type: alert
+      conditions:
+        - source: prometheus
+        - labels.job: "node_exporter"
+  actions:
+    - name: detect-infrastructure-drift
+      provider:
+        type: strands-agent
+        with:
+          agent: infrastructure_drift_detector
+          parameters:
+            drift_types:
+              - configuration_changes: true
+              - resource_allocation: true
+              - security_policies: true
+              - network_topology: true
+            detection_methods:
+              - baseline_comparison: true
+              - anomaly_detection: true
+              - pattern_analysis: true
+    - name: analyze-drift-impact
+      provider:
+        type: bedrock-agentcore
+        with:
+          agent: alert_enrichment_agent
+          model: claude-3-sonnet
+          parameters:
+            analysis_type: "impact_assessment"
+            include_recommendations: true
+            severity_calculation: "ai_based"
+    - name: auto-remediate-if-safe
+      provider:
+        type: strands-agent
+        with:
+          agent: automated_remediation_agent
+          conditions:
+            - drift_severity: "low"
+            - remediation_confidence: "> 0.8"
+            - safety_checks: "passed"
+          parameters:
+            remediation_actions:
+              - restart_services: true
+              - scale_resources: true
+              - update_configurations: true
+              - apply_security_patches: false  # Manual approval required
+    - name: create-drift-incident
+      provider:
+        type: mock
+        with:
+          action: create_incident
+          title: "Infrastructure Drift Detected"
+          description: "{{ drift_analysis.summary }}"
+          priority: "{{ drift_analysis.severity }}"
+          condition: "{{ drift_analysis.requires_attention }}"
+    - name: notify-infrastructure-team
+      provider:
+        type: slack
+        with:
+          channel: "#infrastructure"
+          message: |
+            🏗️ Infrastructure Drift Detected
+            **Type:** {{ drift_analysis.type }}
+            **Severity:** {{ drift_analysis.severity }}
+            **Affected Components:** {{ drift_analysis.components | join(', ') }}
+            **Auto-remediation:** {{ remediation.attempted ? 'Attempted' : 'Not attempted' }}
+            **Next Steps:** {{ drift_analysis.recommendations }}
+          condition: "{{ drift_analysis.requires_attention }}"

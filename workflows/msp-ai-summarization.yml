@@ -1,0 +1,77 @@
+workflow:
+  id: msp-ai-summarization
+  name: AI-Powered Incident Summarization
+  description: Generate AI-powered summaries and insights for incidents and alerts
+  strategy: parallel
+  triggers:
+    - type: incident
+      events:
+        - created
+        - updated
+    - type: schedule
+      cron: "0 0 * * *"  # Daily at midnight
+  actions:
+    - name: generate-incident-summary
+      provider:
+        type: strands-agent
+        with:
+          agent: ai_summarization_agent
+          parameters:
+            summary_type: "incident"
+            include_alerts: true
+            include_timeline: true
+            include_root_cause: true
+            include_impact_assessment: true
+            include_recommendations: true
+    - name: analyze-trends-and-patterns
+      provider:
+        type: bedrock-agentcore
+        with:
+          agent: alert_enrichment_agent
+          model: claude-3-sonnet
+          parameters:
+            analysis_type: "trend_analysis"
+            time_range: "7d"
+            include_patterns: true
+            include_predictions: true
+    - name: generate-daily-report
+      provider:
+        type: strands-agent
+        with:
+          agent: ai_summarization_agent
+          parameters:
+            summary_type: "dashboard"
+            report_sections:
+              - alert_volume_analysis
+              - incident_trends
+              - performance_metrics
+              - recommendations
+            format: "executive_summary"
+          condition: "{{ trigger.type == 'schedule' }}"
+    - name: update-incident-with-ai-insights
+      provider:
+        type: mock
+        with:
+          action: update_incident
+          ai_summary: "{{ ai_summary.content }}"
+          ai_root_cause: "{{ ai_summary.root_cause }}"
+          ai_impact_assessment: "{{ ai_summary.impact }}"
+          ai_recommendations: "{{ ai_summary.recommendations }}"
+          condition: "{{ trigger.type == 'incident' }}"
+    - name: send-executive-summary
+      provider:
+        type: email
+        with:
+          to: "executives@msp.com"
+          subject: "Daily MSP Alert Intelligence Report"
+          template: "executive_summary"
+          data:
+            summary: "{{ ai_summary.content }}"
+            trends: "{{ trend_analysis.insights }}"
+            recommendations: "{{ ai_summary.recommendations }}"
+            metrics:
+              total_alerts: "{{ metrics.total_alerts }}"
+              noise_reduction: "{{ metrics.noise_reduction_rate }}%"
+              correlation_rate: "{{ metrics.correlation_rate }}%"
+              ai_processing_rate: "{{ metrics.ai_processing_rate }}%"
+          condition: "{{ trigger.type == 'schedule' }}"

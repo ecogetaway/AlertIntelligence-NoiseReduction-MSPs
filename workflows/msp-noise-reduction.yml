@@ -1,0 +1,53 @@
+workflow:
+  id: msp-noise-reduction
+  name: MSP Noise Reduction with AI
+  description: Reduce alert noise using AI-powered filtering and suppression
+  strategy: parallel
+  triggers:
+    - type: alert
+      conditions:
+        - status: active
+  actions:
+    - name: analyze-noise-patterns
+      provider:
+        type: bedrock-agentcore
+        with:
+          agent: noise_reduction_agent
+          model: claude-3-sonnet
+          parameters:
+            noise_detection:
+              - pattern_recognition: true
+              - frequency_analysis: true
+              - context_analysis: true
+            suppression_rules:
+              - low_severity_repeated: true
+              - test_environment: true
+              - maintenance_windows: true
+    - name: apply-smart-filtering
+      provider:
+        type: strands-agent
+        with:
+          agent: multi_step_processor
+          steps:
+            - validate_alert_legitimacy
+            - check_suppression_rules
+            - apply_contextual_filtering
+            - route_to_appropriate_channel
+    - name: suppress-noise-alerts
+      provider:
+        type: mock
+        with:
+          action: suppress
+          reason: "AI-detected noise pattern"
+          confidence: "{{ noise_analysis.confidence }}"
+          condition: "{{ noise_analysis.is_noise }}"
+    - name: log-noise-reduction-metrics
+      provider:
+        type: console
+        with:
+          message: |
+            Noise Reduction Applied:
+            - Total Alerts: {{ alerts | length }}
+            - Suppressed: {{ suppressed_count }}
+            - Noise Reduction Rate: {{ noise_reduction_rate }}%
+            - AI Confidence: {{ ai_confidence }}
