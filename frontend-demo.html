@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSP Alert Intelligence Platform - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .alert-severity-critical { background-color: #dc2626; color: white; }
+        .alert-severity-high { background-color: #ea580c; color: white; }
+        .alert-severity-medium { background-color: #d97706; color: white; }
+        .alert-severity-low { background-color: #16a34a; color: white; }
+        .alert-severity-info { background-color: #2563eb; color: white; }
+        .status-active { background-color: #dc2626; color: white; }
+        .status-acknowledged { background-color: #ea580c; color: white; }
+        .status-resolved { background-color: #16a34a; color: white; }
+        .status-suppressed { background-color: #6b7280; color: white; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900">MSP Alert Intelligence Platform</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                        Demo Mode
+                    </span>
+                    <span class="text-sm text-gray-500">AI-Powered Alert Management</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-red-100 rounded-lg">
+                        <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Alerts</p>
+                        <p class="text-2xl font-bold text-gray-900">3</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-orange-100 rounded-lg">
+                        <i data-lucide="activity" class="w-6 h-6 text-orange-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Active Alerts</p>
+                        <p class="text-2xl font-bold text-gray-900">2</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <i data-lucide="brain" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">AI Processing</p>
+                        <p class="text-2xl font-bold text-gray-900">95%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <i data-lucide="zap" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Noise Reduction</p>
+                        <p class="text-2xl font-bold text-gray-900">78%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-8">
+                <button onclick="showTab('alerts')" id="alerts-tab" class="flex items-center space-x-2 py-2 px-1 border-b-2 border-blue-500 text-blue-600 font-medium text-sm">
+                    <i data-lucide="alert-triangle" class="h-4 w-4"></i>
+                    <span>Alerts</span>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">3</span>
+                </button>
+                <button onclick="showTab('incidents')" id="incidents-tab" class="flex items-center space-x-2 py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                    <i data-lucide="activity" class="h-4 w-4"></i>
+                    <span>Incidents</span>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">1</span>
+                </button>
+                <button onclick="showTab('analytics')" id="analytics-tab" class="flex items-center space-x-2 py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                    <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
+                    <span>Analytics</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Alerts Tab Content -->
+        <div id="alerts-content" class="space-y-6">
+            <!-- Filters -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Severity</label>
+                        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
+                            <option value="">All Severities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
+                            <option value="">All Statuses</option>
+                            <option value="active">Active</option>
+                            <option value="acknowledged">Acknowledged</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Source</label>
+                        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
+                            <option value="">All Sources</option>
+                            <option value="prometheus">Prometheus</option>
+                            <option value="datadog">Datadog</option>
+                            <option value="sentry">Sentry</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <input type="text" placeholder="Search alerts..." class="w-full border border-gray-300 rounded-md px-3 py-2">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Cards -->
+            <div class="space-y-4">
+                <!-- Alert 1 -->
+                <div class="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i data-lucide="alert-triangle" class="h-5 w-5 text-red-500"></i>
+                                    <h3 class="text-lg font-medium text-gray-900">High CPU Usage on Server-01</h3>
+                                    <span class="alert-severity-high px-2 py-1 rounded text-xs font-medium">HIGH</span>
+                                    <span class="status-active px-2 py-1 rounded text-xs font-medium">ACTIVE</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">CPU usage has exceeded 90% for the past 5 minutes</p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                    <div class="flex items-center space-x-1">
+                                        <i data-lucide="clock" class="h-3 w-3"></i>
+                                        <span>2 minutes ago</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <i data-lucide="tag" class="h-3 w-3"></i>
+                                        <span>prometheus</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex flex-wrap gap-1">
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">instance: server-01</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">job: node_exporter</span>
+                                </div>
+                                <div class="mt-3 flex items-center space-x-2">
+                                    <div class="flex items-center space-x-1 text-xs text-blue-600">
+                                        <i data-lucide="brain" class="h-3 w-3"></i>
+                                        <span>AI Enriched</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1 text-xs text-purple-600">
+                                        <i data-lucide="link" class="h-3 w-3"></i>
+                                        <span>1 Correlation</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="acknowledgeAlert('alert-1')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                    Acknowledge
+                                </button>
+                                <button onclick="suppressAlert('alert-1')" class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700">
+                                    Suppress
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert 2 -->
+                <div class="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i data-lucide="alert-triangle" class="h-5 w-5 text-red-500"></i>
+                                    <h3 class="text-lg font-medium text-gray-900">Memory Usage Critical on Server-01</h3>
+                                    <span class="alert-severity-critical px-2 py-1 rounded text-xs font-medium">CRITICAL</span>
+                                    <span class="status-active px-2 py-1 rounded text-xs font-medium">ACTIVE</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Memory usage has reached 95% capacity</p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                    <div class="flex items-center space-x-1">
+                                        <i data-lucide="clock" class="h-3 w-3"></i>
+                                        <span>4 minutes ago</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <i data-lucide="tag" class="h-3 w-3"></i>
+                                        <span>prometheus</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex flex-wrap gap-1">
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">instance: server-01</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">job: node_exporter</span>
+                                </div>
+                                <div class="mt-3 flex items-center space-x-2">
+                                    <div class="flex items-center space-x-1 text-xs text-blue-600">
+                                        <i data-lucide="brain" class="h-3 w-3"></i>
+                                        <span>AI Enriched</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1 text-xs text-purple-600">
+                                        <i data-lucide="link" class="h-3 w-3"></i>
+                                        <span>1 Correlation</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="acknowledgeAlert('alert-2')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                    Acknowledge
+                                </button>
+                                <button onclick="suppressAlert('alert-2')" class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700">
+                                    Suppress
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert 3 -->
+                <div class="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i data-lucide="alert-triangle" class="h-5 w-5 text-red-500"></i>
+                                    <h3 class="text-lg font-medium text-gray-900">Database Connection Pool Exhausted</h3>
+                                    <span class="alert-severity-critical px-2 py-1 rounded text-xs font-medium">CRITICAL</span>
+                                    <span class="status-acknowledged px-2 py-1 rounded text-xs font-medium">ACKNOWLEDGED</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">All database connections are in use</p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                    <div class="flex items-center space-x-1">
+                                        <i data-lucide="clock" class="h-3 w-3"></i>
+                                        <span>7 minutes ago</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <i data-lucide="tag" class="h-3 w-3"></i>
+                                        <span>datadog</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex flex-wrap gap-1">
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">service: database</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">environment: production</span>
+                                </div>
+                                <div class="mt-3 flex items-center space-x-2">
+                                    <div class="flex items-center space-x-1 text-xs text-blue-600">
+                                        <i data-lucide="brain" class="h-3 w-3"></i>
+                                        <span>AI Enriched</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="resolveAlert('alert-3')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                    Resolve
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incidents Tab Content -->
+        <div id="incidents-content" class="hidden space-y-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Active Incidents</h3>
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h4 class="text-lg font-medium text-gray-900">Server-01 Performance Degradation</h4>
+                            <p class="text-sm text-gray-600 mt-1">Multiple performance alerts on Server-01</p>
+                            <div class="mt-3 flex items-center space-x-4 text-sm">
+                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded">P2</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Investigating</span>
+                                <span class="text-gray-500">Assigned to: john.doe@msp.com</span>
+                            </div>
+                            <div class="mt-4">
+                                <h5 class="text-sm font-medium text-gray-900 mb-2">AI Analysis:</h5>
+                                <p class="text-sm text-gray-600">AI analysis indicates potential memory leak causing CPU and memory issues. Recommended actions: 1. Restart application services 2. Investigate memory leak 3. Scale resources if needed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab Content -->
+        <div id="analytics-content" class="hidden space-y-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">AI Processing Analytics</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i data-lucide="brain" class="h-8 w-8 text-blue-600"></i>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-blue-600">AI Processing</p>
+                                <p class="text-2xl font-bold text-blue-900">95%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i data-lucide="zap" class="h-8 w-8 text-green-600"></i>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-green-600">Noise Reduction</p>
+                                <p class="text-2xl font-bold text-green-900">78%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i data-lucide="bar-chart-3" class="h-8 w-8 text-purple-600"></i>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-purple-600">Correlation Rate</p>
+                                <p class="text-2xl font-bold text-purple-900">62%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all content
+            document.getElementById('alerts-content').classList.add('hidden');
+            document.getElementById('incidents-content').classList.add('hidden');
+            document.getElementById('analytics-content').classList.add('hidden');
+            
+            // Remove active class from all tabs
+            document.getElementById('alerts-tab').classList.remove('border-blue-500', 'text-blue-600');
+            document.getElementById('alerts-tab').classList.add('border-transparent', 'text-gray-500');
+            document.getElementById('incidents-tab').classList.remove('border-blue-500', 'text-blue-600');
+            document.getElementById('incidents-tab').classList.add('border-transparent', 'text-gray-500');
+            document.getElementById('analytics-tab').classList.remove('border-blue-500', 'text-blue-600');
+            document.getElementById('analytics-tab').classList.add('border-transparent', 'text-gray-500');
+            
+            // Show selected content
+            document.getElementById(tabName + '-content').classList.remove('hidden');
+            
+            // Add active class to selected tab
+            document.getElementById(tabName + '-tab').classList.add('border-blue-500', 'text-blue-600');
+            document.getElementById(tabName + '-tab').classList.remove('border-transparent', 'text-gray-500');
+        }
+
+        // Alert actions
+        function acknowledgeAlert(alertId) {
+            alert(`Alert ${alertId} acknowledged! This would update the alert status in a real system.`);
+            // In a real app, this would make an API call
+        }
+
+        function suppressAlert(alertId) {
+            alert(`Alert ${alertId} suppressed! This would mark the alert as suppressed in a real system.`);
+            // In a real app, this would make an API call
+        }
+
+        function resolveAlert(alertId) {
+            alert(`Alert ${alertId} resolved! This would mark the alert as resolved in a real system.`);
+            // In a real app, this would make an API call
+        }
+
+        // Auto-refresh demo (simulate real-time updates)
+        setInterval(() => {
+            // In a real app, this would fetch new data from the API
+            console.log('Simulating real-time updates...');
+        }, 30000); // Every 30 seconds
+    </script>
+</body>
+</html>
