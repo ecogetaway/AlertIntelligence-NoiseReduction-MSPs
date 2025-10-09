@@ -7,44 +7,35 @@ sqlmodel==0.0.22
 alembic==1.13.2
 psycopg2-binary==2.9.10
 
-# AWS SDK and AI services
-boto3==1.35.85
-botocore==1.35.85
-bedrock-agentcore==1.0.0
-strands-agents==1.0.0
+# AWS SDK (optional for demo)
+boto3>=1.26.0
+botocore>=1.29.0
 
 # Database and caching
-redis==5.2.1
-asyncpg==0.29.0
+redis>=5.0.0
+asyncpg>=0.29.0
 
 # HTTP and API
-httpx==0.28.1
-requests==2.32.4
-aiohttp==3.10.11
+httpx>=0.28.0
+requests>=2.32.0
+aiohttp>=3.10.0
 
-# AI and ML
-openai==1.37.1
-anthropic==0.44.0
-langchain==0.3.7
-langchain-community==0.3.7
+# AI and ML (optional for demo)
+openai>=1.0.0
+anthropic>=0.40.0
 
 # Monitoring and observability
-prometheus-client==0.21.1
-structlog==24.4.0
-sentry-sdk[fastapi]==1.15.0
+prometheus-client>=0.21.0
+structlog>=24.0.0
 
 # Utilities
-python-dotenv==1.0.1
-pyyaml==6.0.2
-click==8.1.7
-rich==13.9.4
-typer==0.12.5
+python-dotenv>=1.0.0
+pyyaml>=6.0.0
+click>=8.1.0
+rich>=13.0.0
 
 # Development
-pytest==8.2.0
-pytest-asyncio==0.25.0
-pytest-mock==3.11.1
-black==24.3.0
-isort==5.12.0
-flake8==6.0.0
-mypy==1.13.0
+pytest>=8.0.0
+pytest-asyncio>=0.25.0
+black>=24.0.0
+isort>=5.12.0

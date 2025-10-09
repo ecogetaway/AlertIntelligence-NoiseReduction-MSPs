@@ -35,6 +35,27 @@ A hackathon prototype for an Alert Intelligence & Noise Reduction application ta
 
 ## Quick Start
 
+### Demo Version (No AWS Credentials Required)
+
+For a quick demo with simulated AI agents:
+
+```bash
+# Clone and setup demo
+git clone https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs.git
+cd AlertIntelligence-NoiseReduction-MSPs
+
+# Setup demo environment
+./scripts/demo-setup.sh
+
+# Start all services
+docker-compose up -d
+
+# Access application
+open http://localhost
+```
+
+### Production Setup
+
 ### Prerequisites
 - Node.js 18+
 - Python 3.11+
@@ -45,8 +66,8 @@ A hackathon prototype for an Alert Intelligence & Noise Reduction application ta
 
 1. **Clone and setup**
 ```bash
-git clone <repository-url>
-cd msp-alert-app
+git clone https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs.git
+cd AlertIntelligence-NoiseReduction-MSPs
 ```
 
 2. **Backend setup**

@@ -8,8 +8,10 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-import boto3
-from botocore.exceptions import ClientError, BotoCoreError
+# Note: For demo purposes, we're simulating AWS Bedrock AgentCore functionality
+# In production, you would use the actual AWS SDK:
+# import boto3
+# from botocore.exceptions import ClientError, BotoCoreError
 
 from core.config import settings
 
@@ -26,15 +28,17 @@ class BedrockAgentCoreManager:
         self.is_initialized = False
     
     async def initialize(self):
-        """Initialize Bedrock AgentCore"""
+        """Initialize Bedrock AgentCore (Demo Simulation)"""
         try:
-            # Initialize Bedrock client
-            self.bedrock_client = boto3.client(
-                'bedrock-runtime',
-                region_name=settings.AWS_REGION,
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-            )
+            # For demo purposes, we're simulating the Bedrock client
+            # In production, you would initialize the actual AWS client:
+            # self.bedrock_client = boto3.client(
+            #     'bedrock-runtime',
+            #     region_name=settings.AWS_REGION,
+            #     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            #     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+            # )
+            self.bedrock_client = {"simulated": True, "region": settings.AWS_REGION}
             
             # Initialize AgentCore Runtime if URL is provided
             if settings.BEDROCK_AGENTCORE_RUNTIME_URL:
