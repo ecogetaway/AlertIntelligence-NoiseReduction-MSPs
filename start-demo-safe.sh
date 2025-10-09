@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# MSP Alert Intelligence Platform - Frontend Demo Startup Script
-# This script starts a simple HTTP server to serve the frontend demo
+# MSP Alert Intelligence Platform - Safe Demo Startup Script
+# This script finds an available port and starts the frontend demo
 
 echo "🚀 Starting MSP Alert Intelligence Platform - Frontend Demo..."
 
@@ -18,6 +18,24 @@ if [ ! -f "frontend-demo.html" ]; then
 fi
 
 echo "✅ Frontend demo file found"
+
+# Function to find an available port
+find_available_port() {
+    local port=3000
+    while lsof -ti:$port > /dev/null 2>&1; do
+        port=$((port + 1))
+        if [ $port -gt 9999 ]; then
+            echo "❌ No available ports found in range 3000-9999"
+            exit 1
+        fi
+    done
+    echo $port
+}
+
+# Find an available port
+PORT=$(find_available_port)
+echo "📍 Using port: $PORT"
+
 echo ""
 echo "🎯 Demo Features:"
 echo "- ✅ Interactive Alert Dashboard"
@@ -28,8 +46,8 @@ echo "- ✅ Incident Management"
 echo "- ✅ Analytics Dashboard"
 echo "- ✅ Responsive Design"
 echo ""
-echo "📍 Opening demo in browser..."
-echo "📍 Demo will be available at: http://localhost:3000"
+echo "📍 Demo will be available at: http://localhost:$PORT"
+echo "📍 Direct link: http://localhost:$PORT/frontend-demo.html"
 echo ""
 echo "🎯 What you can do in the demo:"
 echo "- View alerts with different severities and statuses"
@@ -42,6 +60,6 @@ echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""
 
-# Start a simple HTTP server on port 3000
-echo "🚀 Starting HTTP server on port 3000..."
-python3 -m http.server 3000
+# Start the HTTP server
+echo "🚀 Starting HTTP server on port $PORT..."
+python3 -m http.server $PORT
