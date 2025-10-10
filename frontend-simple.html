@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSP Alert Intelligence Platform - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .alert-severity-critical { background-color: #dc2626; color: white; }
+        .alert-severity-high { background-color: #f97316; color: white; }
+        .alert-severity-medium { background-color: #eab308; color: white; }
+        .alert-severity-low { background-color: #3b82f6; color: white; }
+        .alert-severity-info { background-color: #22c55e; color: white; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">🛡️</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">MSP Alert Intelligence</h1>
+                        <p class="text-sm text-gray-500">AI-Powered Alert Management</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 text-sm text-gray-600">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>All Systems Operational</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 text-red-500">⚠️</div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total Alerts</p>
+                        <p class="text-2xl font-bold text-gray-900">5</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 text-orange-500">⚡</div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Active Alerts</p>
+                        <p class="text-2xl font-bold text-gray-900">3</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 text-blue-500">🔗</div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Incidents</p>
+                        <p class="text-2xl font-bold text-gray-900">1</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 text-green-500">📈</div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Noise Reduction</p>
+                        <p class="text-2xl font-bold text-gray-900">80%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8 px-6">
+                    <button class="flex items-center space-x-2 py-4 px-1 border-b-2 border-blue-500 text-blue-600 font-medium text-sm">
+                        <span>⚠️</span>
+                        <span>Alerts</span>
+                        <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">5</span>
+                    </button>
+                    <button class="flex items-center space-x-2 py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                        <span>🔗</span>
+                        <span>Incidents</span>
+                        <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">1</span>
+                    </button>
+                    <button class="flex items-center space-x-2 py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                        <span>📊</span>
+                        <span>Analytics</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-6">
+                <!-- Alert Controls -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-4">
+                        <button class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            <span>⚙️</span>
+                            <span>Advanced Filters</span>
+                        </button>
+                        
+                        <button class="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            <span>📥</span>
+                            <span>Export CSV</span>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            <span>☑️</span>
+                            <span>Select All</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Basic Filters -->
+                <div class="flex items-center space-x-4 mb-6">
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                    
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="acknowledged">Acknowledged</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+
+                <!-- Alerts List -->
+                <div class="space-y-4">
+                    <!-- Alert 1 -->
+                    <div class="bg-white rounded-lg shadow p-4 relative">
+                        <div class="absolute top-2 left-2">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 rounded">
+                        </div>
+                        
+                        <div class="ml-8">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-900">High CPU Usage on Server-01</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium alert-severity-high">high</span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">active</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-1">CPU usage has exceeded 90% for the past 5 minutes</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span>Source: prometheus</span>
+                                    <span>•</span>
+                                    <span>2024-01-15 11:00:00</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">performance</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">server-01</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert 2 -->
+                    <div class="bg-white rounded-lg shadow p-4 relative">
+                        <div class="absolute top-2 left-2">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 rounded">
+                        </div>
+                        
+                        <div class="ml-8">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-900">Memory Leak Detected</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium alert-severity-critical">critical</span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">active</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-1">Memory usage continuously increasing over 2 hours</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span>Source: datadog</span>
+                                    <span>•</span>
+                                    <span>2024-01-15 10:45:00</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">memory</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">leak</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert 3 -->
+                    <div class="bg-white rounded-lg shadow p-4 relative">
+                        <div class="absolute top-2 left-2">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 rounded">
+                        </div>
+                        
+                        <div class="ml-8">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-900">Database Connection Timeout</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium alert-severity-critical">critical</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">acknowledged</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-1">Database connection timeout after 30 seconds</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span>Source: prometheus</span>
+                                    <span>•</span>
+                                    <span>2024-01-15 10:30:00</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">database</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">timeout</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert 4 -->
+                    <div class="bg-white rounded-lg shadow p-4 relative">
+                        <div class="absolute top-2 left-2">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 rounded">
+                        </div>
+                        
+                        <div class="ml-8">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-900">SSL Certificate Expiring</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium alert-severity-medium">medium</span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">active</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-1">SSL certificate expires in 7 days</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span>Source: nagios</span>
+                                    <span>•</span>
+                                    <span>2024-01-15 09:00:00</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">ssl</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">certificate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert 5 -->
+                    <div class="bg-white rounded-lg shadow p-4 relative">
+                        <div class="absolute top-2 left-2">
+                            <input type="checkbox" class="h-4 w-4 text-blue-600 rounded">
+                        </div>
+                        
+                        <div class="ml-8">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-900">API Response Time High</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium alert-severity-low">low</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">resolved</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-1">API response time exceeded 2 seconds</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span>Source: newrelic</span>
+                                    <span>•</span>
+                                    <span>2024-01-15 08:30:00</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">api</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">performance</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple JavaScript for basic interactivity
+        console.log('MSP Alert Intelligence Platform loaded successfully!');
+        
+        // Add click handlers for demo purposes
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard ready for demo!');
+            
+            // Add some basic interactivity
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    console.log('Alert selected:', this.checked);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

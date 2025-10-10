@@ -1,6 +1,17 @@
 """
 MSP Alert Intelligence & Noise Reduction Platform - Demo Version
-Simplified main application entry point for demo purposes
+
+Built on Keep (https://github.com/keephq/keep)
+Keep is an open-source alert management platform licensed under Apache 2.0
+
+This file extends Keep's alert management with MSP-specific features:
+- Multi-tenant noise reduction
+- AWS Bedrock AI analysis
+- SLA-based alert routing
+- Client-specific filtering
+
+MSP Extensions: MIT License
+Keep Core: Apache 2.0
 """
 
 import asyncio
@@ -149,7 +160,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Demo data
+# Demo data with enhanced fields for advanced filtering
 demo_alerts = [
     {
         "id": "alert-1",
@@ -210,6 +221,81 @@ demo_alerts = [
             {"key": "ai_summary", "value": "AI detected database performance issue", "source": "ai_agent"},
             {"key": "root_cause", "value": "Likely caused by long-running queries", "source": "ai_agent"}
         ],
+        "correlations": []
+    },
+    {
+        "id": "alert-5",
+        "title": "Database Connection Timeout",
+        "description": "Database connection timeout after 30 seconds",
+        "severity": "critical",
+        "status": "active",
+        "source": "datadog",
+        "source_id": "db_connection_timeout",
+        "fingerprint": "db-timeout-prod",
+        "labels": {"service": "database", "environment": "production"},
+        "annotations": {"summary": "Database connection timeout"},
+        "started_at": "2024-01-15T11:00:00Z",
+        "created_at": "2024-01-15T11:00:00Z",
+        "tags": ["database", "timeout", "critical", "production"],
+        "time_range": "last_hour",
+        "enrichments": [],
+        "correlations": []
+    },
+    {
+        "id": "alert-6",
+        "title": "Memory Leak Detected",
+        "description": "Memory usage continuously increasing over 2 hours",
+        "severity": "high",
+        "status": "acknowledged",
+        "source": "prometheus",
+        "source_id": "memory_leak",
+        "fingerprint": "memory-leak-app",
+        "labels": {"application": "webapp", "instance": "app-01"},
+        "annotations": {"summary": "Memory leak detected"},
+        "started_at": "2024-01-15T10:45:00Z",
+        "created_at": "2024-01-15T10:45:00Z",
+        "tags": ["memory", "leak", "performance", "webapp"],
+        "time_range": "last_24h",
+        "enrichments": [
+            {"key": "ai_analysis", "value": "AI detected memory leak pattern", "source": "ai_agent"}
+        ],
+        "correlations": []
+    },
+    {
+        "id": "alert-7",
+        "title": "SSL Certificate Expiring",
+        "description": "SSL certificate expires in 7 days",
+        "severity": "warning",
+        "status": "active",
+        "source": "nagios",
+        "source_id": "ssl_cert_expiry",
+        "fingerprint": "ssl-cert-expiry",
+        "labels": {"domain": "example.com", "cert_type": "wildcard"},
+        "annotations": {"summary": "SSL certificate expiring soon"},
+        "started_at": "2024-01-15T09:00:00Z",
+        "created_at": "2024-01-15T09:00:00Z",
+        "tags": ["ssl", "certificate", "security", "warning"],
+        "time_range": "last_week",
+        "enrichments": [],
+        "correlations": []
+    },
+    {
+        "id": "alert-8",
+        "title": "API Response Time High",
+        "description": "API response time exceeded 2 seconds",
+        "severity": "medium",
+        "status": "resolved",
+        "source": "newrelic",
+        "source_id": "api_response_time",
+        "fingerprint": "api-slow-response",
+        "labels": {"endpoint": "/api/users", "method": "GET"},
+        "annotations": {"summary": "High API response time"},
+        "started_at": "2024-01-15T08:30:00Z",
+        "created_at": "2024-01-15T08:30:00Z",
+        "resolved_at": "2024-01-15T08:45:00Z",
+        "tags": ["api", "performance", "response-time"],
+        "time_range": "last_24h",
+        "enrichments": [],
         "correlations": []
     }
 ]
@@ -272,7 +358,7 @@ async def list_alerts(
     source: str = None,
     search: str = None
 ):
-    """List alerts with filtering"""
+    """List alerts with basic filtering"""
     alerts = demo_alerts.copy()
     
     # Apply filters
@@ -298,6 +384,260 @@ async def list_alerts(
         "has_next": end < len(alerts),
         "has_previous": page > 1
     }
+
+@app.get("/api/v1/alerts/advanced-filter")
+async def advanced_filter_alerts(
+    severity: str = None,
+    status: str = None,
+    source: str = None,
+    time_range: str = None,  # "last_hour", "last_24h", "last_week", "last_month"
+    tags: str = None,        # comma-separated tags
+    search: str = None,
+    sort_by: str = "created_at",  # "severity", "created_at", "title", "status"
+    sort_order: str = "desc",     # "asc", "desc"
+    page: int = 1,
+    page_size: int = 20
+):
+    """Advanced filtering with time ranges, tags, and sorting"""
+    alerts = demo_alerts.copy()
+    
+    # Apply severity filter
+    if severity:
+        if "," in severity:
+            severity_list = [s.strip() for s in severity.split(",")]
+            alerts = [a for a in alerts if a["severity"] in severity_list]
+        else:
+            alerts = [a for a in alerts if a["severity"] == severity]
+    
+    # Apply status filter
+    if status:
+        if "," in status:
+            status_list = [s.strip() for s in status.split(",")]
+            alerts = [a for a in alerts if a["status"] in status_list]
+        else:
+            alerts = [a for a in alerts if a["status"] == status]
+    
+    # Apply source filter
+    if source:
+        if "," in source:
+            source_list = [s.strip() for s in source.split(",")]
+            alerts = [a for a in alerts if a["source"] in source_list]
+        else:
+            alerts = [a for a in alerts if a["source"] == source]
+    
+    # Apply time range filter
+    if time_range:
+        from datetime import datetime, timedelta
+        now = datetime.utcnow()
+        
+        if time_range == "last_hour":
+            cutoff = now - timedelta(hours=1)
+        elif time_range == "last_24h":
+            cutoff = now - timedelta(hours=24)
+        elif time_range == "last_week":
+            cutoff = now - timedelta(weeks=1)
+        elif time_range == "last_month":
+            cutoff = now - timedelta(days=30)
+        else:
+            cutoff = None
+        
+        if cutoff:
+            alerts = [a for a in alerts if datetime.fromisoformat(a["created_at"].replace("Z", "+00:00")) >= cutoff]
+    
+    # Apply tags filter
+    if tags:
+        tag_list = [t.strip().lower() for t in tags.split(",")]
+        alerts = [a for a in alerts if any(tag in [t.lower() for t in a.get("tags", [])] for tag in tag_list)]
+    
+    # Apply search filter
+    if search:
+        search_lower = search.lower()
+        alerts = [a for a in alerts if 
+                 search_lower in a["title"].lower() or 
+                 search_lower in a["description"].lower() or
+                 search_lower in a.get("source", "").lower()]
+    
+    # Apply sorting
+    if sort_by == "severity":
+        severity_order = {"critical": 4, "high": 3, "medium": 2, "warning": 1, "info": 0}
+        alerts.sort(key=lambda x: severity_order.get(x["severity"], 0), reverse=(sort_order == "desc"))
+    elif sort_by == "created_at":
+        alerts.sort(key=lambda x: x["created_at"], reverse=(sort_order == "desc"))
+    elif sort_by == "title":
+        alerts.sort(key=lambda x: x["title"].lower(), reverse=(sort_order == "desc"))
+    elif sort_by == "status":
+        alerts.sort(key=lambda x: x["status"], reverse=(sort_order == "desc"))
+    
+    # Pagination
+    start = (page - 1) * page_size
+    end = start + page_size
+    paginated_alerts = alerts[start:end]
+    
+    # Get filter options for UI
+    all_severities = list(set(a["severity"] for a in demo_alerts))
+    all_statuses = list(set(a["status"] for a in demo_alerts))
+    all_sources = list(set(a["source"] for a in demo_alerts))
+    all_tags = list(set(tag for a in demo_alerts for tag in a.get("tags", [])))
+    
+    return {
+        "alerts": paginated_alerts,
+        "total": len(alerts),
+        "page": page,
+        "page_size": page_size,
+        "has_next": end < len(alerts),
+        "has_previous": page > 1,
+        "filter_options": {
+            "severities": all_severities,
+            "statuses": all_statuses,
+            "sources": all_sources,
+            "tags": all_tags,
+            "time_ranges": ["last_hour", "last_24h", "last_week", "last_month"]
+        }
+    }
+
+# Export Functionality API (must come before /{alert_id} route)
+@app.get("/api/v1/alerts/export")
+async def export_alerts(
+    format: str = "csv",  # "csv", "json", "pdf"
+    severity: str = None,
+    status: str = None,
+    source: str = None,
+    time_range: str = None,
+    tags: str = None,
+    include_enrichments: bool = True
+):
+    """Export alerts in various formats"""
+    from datetime import datetime, timedelta
+    import csv
+    import io
+    
+    # Apply same filtering logic as advanced filter
+    alerts = demo_alerts.copy()
+    
+    if severity:
+        if "," in severity:
+            severity_list = [s.strip() for s in severity.split(",")]
+            alerts = [a for a in alerts if a["severity"] in severity_list]
+        else:
+            alerts = [a for a in alerts if a["severity"] == severity]
+    
+    if status:
+        if "," in status:
+            status_list = [s.strip() for s in status.split(",")]
+            alerts = [a for a in alerts if a["status"] in status_list]
+        else:
+            alerts = [a for a in alerts if a["status"] == status]
+    
+    if source:
+        if "," in source:
+            source_list = [s.strip() for s in source.split(",")]
+            alerts = [a for a in alerts if a["source"] in source_list]
+        else:
+            alerts = [a for a in alerts if a["source"] == source]
+    
+    if time_range:
+        now = datetime.utcnow()
+        
+        if time_range == "last_hour":
+            cutoff = now - timedelta(hours=1)
+        elif time_range == "last_24h":
+            cutoff = now - timedelta(hours=24)
+        elif time_range == "last_week":
+            cutoff = now - timedelta(weeks=1)
+        elif time_range == "last_month":
+            cutoff = now - timedelta(days=30)
+        else:
+            cutoff = None
+        
+        if cutoff:
+            alerts = [a for a in alerts if datetime.fromisoformat(a["created_at"].replace("Z", "+00:00")) >= cutoff]
+    
+    if tags:
+        tag_list = [t.strip().lower() for t in tags.split(",")]
+        alerts = [a for a in alerts if any(tag in [t.lower() for t in a.get("tags", [])] for tag in tag_list)]
+    
+    # Prepare export data
+    export_data = []
+    for alert in alerts:
+        export_alert = {
+            "id": alert["id"],
+            "title": alert["title"],
+            "description": alert["description"],
+            "severity": alert["severity"],
+            "status": alert["status"],
+            "source": alert["source"],
+            "created_at": alert["created_at"],
+            "started_at": alert.get("started_at"),
+            "resolved_at": alert.get("resolved_at"),
+            "tags": ",".join(alert.get("tags", [])),
+            "labels": str(alert.get("labels", {})),
+        }
+        
+        if include_enrichments:
+            export_alert["enrichments"] = str(alert.get("enrichments", []))
+            export_alert["correlations"] = str(alert.get("correlations", []))
+        
+        export_data.append(export_alert)
+    
+    if format == "csv":
+        output = io.StringIO()
+        if export_data:
+            writer = csv.DictWriter(output, fieldnames=export_data[0].keys())
+            writer.writeheader()
+            writer.writerows(export_data)
+        
+        return {
+            "format": "csv",
+            "data": output.getvalue(),
+            "filename": f"alerts_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv",
+            "total_records": len(export_data)
+        }
+    
+    elif format == "json":
+        return {
+            "format": "json",
+            "data": export_data,
+            "filename": f"alerts_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json",
+            "total_records": len(export_data)
+        }
+    
+    elif format == "pdf":
+        # For demo purposes, return a simple text representation
+        # In production, you'd use a PDF library like reportlab
+        pdf_content = f"""
+MSP Alert Intelligence Platform - Alert Export Report
+Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
+Total Alerts: {len(export_data)}
+
+Summary:
+- Critical: {len([a for a in export_data if a['severity'] == 'critical'])}
+- High: {len([a for a in export_data if a['severity'] == 'high'])}
+- Medium: {len([a for a in export_data if a['severity'] == 'medium'])}
+- Warning: {len([a for a in export_data if a['severity'] == 'warning'])}
+
+Alert Details:
+"""
+        for alert in export_data[:10]:  # Limit to first 10 for demo
+            pdf_content += f"""
+ID: {alert['id']}
+Title: {alert['title']}
+Severity: {alert['severity']}
+Status: {alert['status']}
+Source: {alert['source']}
+Created: {alert['created_at']}
+---
+"""
+        
+        return {
+            "format": "pdf",
+            "data": pdf_content,
+            "filename": f"alerts_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.txt",
+            "total_records": len(export_data),
+            "note": "PDF format simulated as text for demo"
+        }
+    
+    else:
+        raise HTTPException(status_code=400, detail="Invalid format. Must be: csv, json, pdf")
 
 @app.get("/api/v1/alerts/{alert_id}")
 async def get_alert(alert_id: str):
@@ -664,6 +1004,12 @@ async def get_workflow(workflow_id: str):
         logger.error(f"Error getting workflow: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+class BulkActionRequest(BaseModel):
+    alert_ids: List[str]
+    action: str  # "acknowledge", "suppress", "resolve", "assign"
+    reason: str = None
+    assignee: str = None
+
 class WorkflowExecuteRequest(BaseModel):
     workflow_id: str
     trigger_event: Dict[str, Any]
@@ -686,6 +1032,55 @@ async def execute_workflow(payload: WorkflowExecuteRequest):
     except Exception as e:
         logger.error(f"Error executing workflow: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Bulk Operations API
+@app.post("/api/v1/alerts/bulk-action")
+async def bulk_action_alerts(payload: BulkActionRequest):
+    """Perform bulk actions on multiple alerts"""
+    if not payload.alert_ids:
+        raise HTTPException(status_code=400, detail="alert_ids is required")
+    
+    if payload.action not in ["acknowledge", "suppress", "resolve", "assign"]:
+        raise HTTPException(status_code=400, detail="Invalid action. Must be: acknowledge, suppress, resolve, assign")
+    
+    results = {
+        "action": payload.action,
+        "total_requested": len(payload.alert_ids),
+        "successful": 0,
+        "failed": 0,
+        "errors": []
+    }
+    
+    for alert_id in payload.alert_ids:
+        alert = next((a for a in demo_alerts if a["id"] == alert_id), None)
+        if not alert:
+            results["failed"] += 1
+            results["errors"].append(f"Alert {alert_id} not found")
+            continue
+        
+        try:
+            if payload.action == "acknowledge":
+                alert["status"] = "acknowledged"
+                alert.setdefault("annotations", {})["acknowledged_by"] = payload.assignee or "bulk-user"
+                alert.setdefault("annotations", {})["acknowledged_at"] = datetime.utcnow().isoformat()
+            elif payload.action == "suppress":
+                alert["status"] = "suppressed"
+                alert.setdefault("annotations", {})["suppression_reason"] = payload.reason or "Bulk suppression"
+                alert.setdefault("annotations", {})["suppressed_at"] = datetime.utcnow().isoformat()
+            elif payload.action == "resolve":
+                alert["status"] = "resolved"
+                alert["resolved_at"] = datetime.utcnow().isoformat()
+            elif payload.action == "assign":
+                alert.setdefault("annotations", {})["assigned_to"] = payload.assignee
+                alert.setdefault("annotations", {})["assigned_at"] = datetime.utcnow().isoformat()
+            
+            results["successful"] += 1
+        except Exception as e:
+            results["failed"] += 1
+            results["errors"].append(f"Error processing alert {alert_id}: {str(e)}")
+    
+    return results
+
 
 if __name__ == "__main__":
     # Run the application

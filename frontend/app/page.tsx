@@ -1,12 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { AlertTriangle, Activity, Zap, Brain, BarChart3, Settings } from 'lucide-react'
+import { AlertTriangle, Activity, Zap, Brain, BarChart3, Settings, Filter, CheckSquare, Square } from 'lucide-react'
 import { AlertCard } from '@/components/alert-card'
 import { AlertFilters } from '@/components/alert-filters'
 import { AlertStats } from '@/components/alert-stats'
 import { IncidentList } from '@/components/incident-list'
 import { DashboardHeader } from '@/components/dashboard-header'
+import { AdvancedFilter } from '@/components/advanced-filter'
+import { BulkOperations, AlertSelection } from '@/components/bulk-operations'
+import { ExportFunctionality } from '@/components/export-functionality'
 import { useAlerts } from '@/hooks/use-alerts'
 import { useIncidents } from '@/hooks/use-incidents'
 import { Alert, Incident } from '@/types'
@@ -19,6 +22,9 @@ export default function Dashboard() {
     source: '',
     search: ''
   })
+  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false)
+  const [selectedAlerts, setSelectedAlerts] = useState<string[]>([])
+  const [showBulkOperations, setShowBulkOperations] = useState(false)
 
   const { 
     alerts, 
@@ -48,6 +54,80 @@ export default function Dashboard() {
     // Handle incident actions
     console.log(`Performing ${action} on incident ${incidentId}`)
     await refetchIncidents()
+  }
+
+  const handleAdvancedFilterChange = (newFilters: any) => {
+    setFilters(newFilters)
+    setShowAdvancedFilter(false)
+  }
+
+  const handleAlertSelection = (alertId: string) => {
+    setSelectedAlerts(prev => 
+      prev.includes(alertId) 
+        ? prev.filter(id => id !== alertId)
+        : [...prev, alertId]
+    )
+  }
+
+  const handleSelectAll = () => {
+    if (selectedAlerts.length === alerts?.length) {
+      setSelectedAlerts([])
+    } else {
+      setSelectedAlerts(alerts?.map(alert => alert.id) || [])
+    }
+  }
+
+  const handleBulkAction = async (action: string, alertIds: string[], reason?: string, assignee?: string) => {
+    try {
+      const response = await fetch('/api/v1/alerts/bulk-action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          alert_ids: alertIds,
+          action,
+          reason,
+          assignee
+        })
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Bulk action result:', result)
+        setSelectedAlerts([])
+        await refetchAlerts()
+      }
+    } catch (error) {
+      console.error('Bulk action failed:', error)
+    }
+  }
+
+  const handleExport = async (format: string, filters?: any) => {
+    try {
+      const params = new URLSearchParams({ format })
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value && value.length > 0) {
+            params.append(key, Array.isArray(value) ? value.join(',') : value)
+          }
+        })
+      }
+      
+      const response = await fetch(`/api/v1/alerts/export?${params}`)
+      const data = await response.json()
+      
+      // Create download link
+      const blob = new Blob([data.data], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = data.filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Export failed:', error)
+    }
   }
 
   return (
@@ -100,6 +180,40 @@ export default function Dashboard() {
           <div className="mt-6">
             {selectedTab === 'alerts' && (
               <div className="space-y-6">
+                {/* Alert Controls */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => setShowAdvancedFilter(true)}
+                      className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <Filter className="h-4 w-4" />
+                      <span>Advanced Filters</span>
+                    </button>
+                    
+                    <ExportFunctionality 
+                      currentFilters={filters}
+                      onExport={handleExport}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleSelectAll}
+                      className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      {selectedAlerts.length === alerts?.length ? (
+                        <CheckSquare className="h-4 w-4" />
+                      ) : (
+                        <Square className="h-4 w-4" />
+                      )}
+                      <span>
+                        {selectedAlerts.length === alerts?.length ? 'Deselect All' : 'Select All'}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
                 <AlertFilters 
                   filters={filters}
                   onFilterChange={handleFilterChange}
@@ -123,11 +237,19 @@ export default function Dashboard() {
                     </div>
                   ) : alerts && alerts.length > 0 ? (
                     alerts.map((alert) => (
-                      <AlertCard
-                        key={alert.id}
-                        alert={alert}
-                        onAction={handleAlertAction}
-                      />
+                      <div key={alert.id} className="relative">
+                        <div className="absolute top-2 left-2 z-10">
+                          <AlertSelection
+                            alertId={alert.id}
+                            isSelected={selectedAlerts.includes(alert.id)}
+                            onToggle={handleAlertSelection}
+                          />
+                        </div>
+                        <AlertCard
+                          alert={alert}
+                          onAction={handleAlertAction}
+                        />
+                      </div>
                     ))
                   ) : (
                     <div className="text-center py-12">
@@ -210,6 +332,22 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Advanced Filter Modal */}
+      <AdvancedFilter
+        isOpen={showAdvancedFilter}
+        onClose={() => setShowAdvancedFilter(false)}
+        onFilterChange={handleAdvancedFilterChange}
+      />
+
+      {/* Bulk Operations */}
+      {selectedAlerts.length > 0 && (
+        <BulkOperations
+          selectedAlerts={selectedAlerts}
+          onBulkAction={handleBulkAction}
+          onClearSelection={() => setSelectedAlerts([])}
+        />
+      )}
     </div>
   )
 }
