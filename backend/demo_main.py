@@ -17,6 +17,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import uvicorn
+from uuid import uuid4
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Configure logging
 logging.basicConfig(
@@ -67,6 +70,22 @@ async def lifespan(app: FastAPI):
     global bedrock_manager, strands_manager, orchestrator, deduplicator, filter_engine
     
     logger.info("Starting MSP Alert Intelligence Platform (Demo Mode)")
+    
+    # Initialize AI client
+    try:
+        from ai.ai_client import get_ai_client
+        ai_client = get_ai_client()
+        logger.info(f"AI Client initialized: provider={ai_client.provider}, real={ai_client.is_real}")
+    except Exception as e:
+        logger.warning(f"Could not initialize AI client: {e}")
+    
+    # Initialize workflow executor
+    try:
+        from workflows.workflow_executor import get_workflow_executor
+        workflow_executor = get_workflow_executor()
+        logger.info(f"Workflow Executor initialized with {len(workflow_executor.workflows)} workflows")
+    except Exception as e:
+        logger.warning(f"Could not initialize Workflow Executor: {e}")
     
     # Initialize simulated agents
     bedrock_manager = {
@@ -355,23 +374,120 @@ async def deduplicate_alerts():
 
 @app.post("/api/v1/alerts/correlate")
 async def correlate_alerts():
-    """Correlate alerts (simulated)"""
+    """Correlate alerts using simple demo rules.
+
+    Rules:
+    - Same source AND same labels.instance (if present)
+    - Started within 10 minutes of each other
+    """
+    def parse_dt(s: str) -> datetime:
+        try:
+            return datetime.fromisoformat(s.replace("Z", "+00:00"))
+        except Exception:
+            return datetime.utcnow()
+
+    window_minutes = 10
+    correlations: List[Dict[str, Any]] = []
+    alerts = demo_alerts
+    for i in range(len(alerts)):
+        for j in range(i + 1, len(alerts)):
+            a = alerts[i]
+            b = alerts[j]
+            same_source = a.get("source") == b.get("source")
+            same_instance = a.get("labels", {}).get("instance") and a.get("labels", {}).get("instance") == b.get("labels", {}).get("instance")
+
+            if not (same_source and same_instance):
+                continue
+
+            t1 = parse_dt(a.get("started_at", a.get("created_at", "")))
+            t2 = parse_dt(b.get("started_at", b.get("created_at", "")))
+            within_window = abs((t2 - t1).total_seconds()) <= window_minutes * 60
+
+            if within_window:
+                correlations.append({
+                    "alert1_id": a["id"],
+                    "alert2_id": b["id"],
+                    "correlation_type": "temporal+entity",
+                    "confidence": 0.85,
+                    "reason": f"Same source and instance within {window_minutes}m"
+                })
+
     return {
-        "correlations": [
-            {
-                "alert1_id": "alert-1",
-                "alert2_id": "alert-2",
-                "correlation_type": "temporal",
-                "confidence": 0.85,
-                "reason": "Alerts occurred within 2 minutes on same server"
-            }
-        ],
+        "correlations": correlations,
         "correlation_stats": {
-            "total_alerts": len(demo_alerts),
-            "correlations_found": 1,
-            "correlation_rate": 0.33
+            "total_alerts": len(alerts),
+            "correlations_found": len(correlations),
+            "correlation_rate": round(len(correlations) / max(1, len(alerts)), 2)
         }
     }
+
+class CorrelationToIncidentRequest(BaseModel):
+    alert_ids: List[str]
+    title: str | None = None
+    description: str | None = None
+
+@app.post("/api/v1/incidents/from-correlation")
+async def create_incident_from_correlation(payload: CorrelationToIncidentRequest):
+    """Create an incident from a set of correlated alert IDs with AI summary."""
+    if not payload.alert_ids:
+        raise HTTPException(status_code=400, detail="alert_ids is required")
+
+    related_alerts = [a for a in demo_alerts if a["id"] in payload.alert_ids]
+    if not related_alerts:
+        raise HTTPException(status_code=404, detail="No matching alerts found")
+
+    incident_id = f"incident-{uuid4().hex[:8]}"
+    title = payload.title or (related_alerts[0]["title"] + " (Correlated)")
+    description = payload.description or "Created from correlated alerts"
+
+    incident = {
+        "id": incident_id,
+        "title": title,
+        "description": description,
+        "status": "open",
+        "priority": "p2",
+        "incident_type": "infrastructure",
+        "assignee": None,
+        "tags": ["correlated", "ai-enhanced"],
+        "started_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.utcnow().isoformat(),
+        "alerts": payload.alert_ids,
+    }
+    
+    # Generate AI summary
+    try:
+        from ai.ai_client import get_ai_client
+        ai_client = get_ai_client()
+        ai_summary = await ai_client.incident_summary(incident, related_alerts)
+        incident.update(ai_summary)
+        logger.info(f"AI summary generated for incident {incident_id}")
+    except Exception as e:
+        logger.warning(f"Could not generate AI summary: {e}")
+        incident["ai_summary"] = "[Simulated] Incident involving multiple correlated alerts"
+    
+    demo_incidents.append(incident)
+
+    # Annotate alerts with incident id
+    for a in demo_alerts:
+        if a["id"] in payload.alert_ids:
+            a.setdefault("annotations", {})["incident_id"] = incident_id
+
+    return {"incident": incident}
+
+class IncidentUpdateRequest(BaseModel):
+    status: str
+
+@app.patch("/api/v1/incidents/{incident_id}")
+async def update_incident(incident_id: str, payload: IncidentUpdateRequest):
+    """Update incident status (open, investigating, resolved, closed)."""
+    incident = next((i for i in demo_incidents if i["id"] == incident_id), None)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+    incident["status"] = payload.status
+    incident["updated_at"] = datetime.utcnow().isoformat()
+    if payload.status in {"resolved", "closed"}:
+        incident["resolved_at"] = datetime.utcnow().isoformat()
+    return {"incident": incident}
 
 @app.post("/api/v1/alerts/{alert_id}/enrich")
 async def enrich_alert(alert_id: str):
@@ -498,16 +614,78 @@ async def ingest_alerts(alerts: List[AlertIngestRequest]):
 @app.get("/api/v1/processing/stats")
 async def get_processing_stats():
     """Get processing statistics"""
-    if not orchestrator:
-        return {"message": "Processing services not available"}
+    active_count = len([a for a in demo_alerts if a["status"] == "active"])
+    suppressed_count = len([a for a in demo_alerts if a["status"] == "suppressed"])
     
-    stats = orchestrator.get_processing_stats()
-    return {
-        "orchestrator_stats": stats,
-        "deduplicator_stats": deduplicator.get_cache_stats() if deduplicator else {},
-        "filter_stats": filter_engine.get_filter_stats(demo_alerts) if filter_engine else {},
-        "websocket_connections": len(manager.active_connections)
+    base_stats = {
+        "total_alerts": len(demo_alerts),
+        "active_alerts": active_count,
+        "suppressed_alerts": suppressed_count,
+        "incidents": len(demo_incidents),
+        "websocket_connections": len(manager.active_connections),
+        "noise_reduction_rate": round((suppressed_count / max(1, len(demo_alerts))) * 100, 2)
     }
+    
+    if orchestrator:
+        stats = orchestrator.get_processing_stats()
+        base_stats.update({
+            "orchestrator_stats": stats,
+            "deduplicator_stats": deduplicator.get_cache_stats() if deduplicator else {},
+            "filter_stats": filter_engine.get_filter_stats(demo_alerts) if filter_engine else {}
+        })
+    
+    return base_stats
+
+# Workflow API Endpoints
+@app.get("/api/v1/workflows")
+async def list_workflows():
+    """List all available workflows"""
+    try:
+        from workflows.workflow_executor import get_workflow_executor
+        executor = get_workflow_executor()
+        return {"workflows": executor.list_workflows()}
+    except Exception as e:
+        logger.error(f"Error listing workflows: {e}")
+        return {"workflows": [], "error": str(e)}
+
+@app.get("/api/v1/workflows/{workflow_id}")
+async def get_workflow(workflow_id: str):
+    """Get a specific workflow by ID"""
+    try:
+        from workflows.workflow_executor import get_workflow_executor
+        executor = get_workflow_executor()
+        workflow = executor.get_workflow(workflow_id)
+        if not workflow:
+            raise HTTPException(status_code=404, detail="Workflow not found")
+        return {"workflow": workflow}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting workflow: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+class WorkflowExecuteRequest(BaseModel):
+    workflow_id: str
+    trigger_event: Dict[str, Any]
+    context: Dict[str, Any] | None = None
+
+@app.post("/api/v1/workflows/execute")
+async def execute_workflow(payload: WorkflowExecuteRequest):
+    """Execute a workflow with a given trigger event (for testing/demo)"""
+    try:
+        from workflows.workflow_executor import get_workflow_executor
+        executor = get_workflow_executor()
+        result = await executor.execute_workflow(
+            payload.workflow_id,
+            payload.trigger_event,
+            payload.context
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error executing workflow: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     # Run the application
