@@ -293,7 +293,9 @@ See [ATTRIBUTION.md](ATTRIBUTION.md) for detailed license information.
 
 ## Links
 
-- **Live Demo:** [Your Netlify URL]
+- **Live Demo:** `http://localhost:3000/frontend-demo.html` - Local development
+- **GitHub Repository:** `https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs`
+- **Demo Script:** [HACKATHON_DEMO_SCRIPT.md](./HACKATHON_DEMO_SCRIPT.md) - 3-4 minute demo guide
+- **Setup Guide:** [DEMO_SETUP_GUIDE.md](./DEMO_SETUP_GUIDE.md) - Quick start instructions
 - **Keep Project:** https://github.com/keephq/keep
 - **Keep Documentation:** https://docs.keephq.dev
-- **Hackathon Submission:** [Your submission URL]
