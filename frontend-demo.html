@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MSP Alert Intelligence Platform - Demo</title>
     
-    <!-- 
+    <!--
         MSP Alert Intelligence Platform
-        Built on Keep (https://github.com/keephq/keep)
-        
-        Keep: Apache 2.0 License
-        MSP Extensions: MIT License
+        Hackathon prototype demo (no upstream dependencies implied)
     -->
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -65,6 +62,21 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        /* Fade/slide in for new alerts */
+        .fade-in-up { 
+            animation: fadeInUp 500ms ease-out both; 
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Pulsing live dot */
+        .pulse-dot { position: relative; }
+        .pulse-dot::after { 
+            content: ""; position: absolute; inset: -4px; border-radius: 9999px; 
+            border: 2px solid #22c55e; opacity: 0; animation: ping 1.5s cubic-bezier(0,0,0.2,1) infinite; 
+        }
+        @keyframes ping { 0% { opacity: .6; transform: scale(1); } 75% { transform: scale(2); opacity: 0; } 100% { opacity: 0; } }
         
         /* Custom scrollbar for dark theme */
         ::-webkit-scrollbar {
@@ -89,7 +101,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const AlertIntelligenceDashboard = () => {
             const [alerts, setAlerts] = useState([]);
@@ -101,6 +113,16 @@
             const [selectedAlerts, setSelectedAlerts] = useState([]);
             const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
             const [loading, setLoading] = useState(false);
+            const [isLive, setIsLive] = useState(false);
+            const [liveTimerId, setLiveTimerId] = useState(null);
+            const [events, setEvents] = useState([]);
+            const [noiseReduction, setNoiseReduction] = useState(80);
+            const [dedupRate, setDedupRate] = useState(65);
+            const [correlationAcc, setCorrelationAcc] = useState(92);
+            const [onlyActive, setOnlyActive] = useState(false);
+            const [highlightId, setHighlightId] = useState(null);
+            const eventsRef = useRef(null);
+            const [isEventsHover, setIsEventsHover] = useState(false);
 
             // Mock data
             const mockAlerts = [
@@ -183,7 +205,109 @@
                 if (selectedView === 'analytics') {
                     initializeChart();
                 }
+                // Auto-reset filters when switching tabs
+                setFilterSeverity('all');
+                setFilterStatus('all');
+                setOnlyActive(false);
             }, [selectedView]);
+
+            // Live mode simulation: periodically mutate alerts to look "live"
+            useEffect(() => {
+                if (!isLive) {
+                    if (liveTimerId) {
+                        clearInterval(liveTimerId);
+                        setLiveTimerId(null);
+                    }
+                    return;
+                }
+
+                // Jump to Analytics when Live is enabled
+                setSelectedView('analytics');
+
+                const randomOf = (arr) => arr[Math.floor(Math.random() * arr.length)];
+                const severities = ['critical','high','medium','low','info'];
+                const statuses = ['active','acknowledged','resolved'];
+
+                const timer = setInterval(() => {
+                    setAlerts((prev) => {
+                        const next = Array.isArray(prev) ? [...prev] : [];
+                        const action = Math.random();
+
+                        // 60% add a new alert
+                        if (action < 0.6) {
+                            const id = `alert-${Date.now()}`;
+                            const newAlert = {
+                                id,
+                                title: `${randomOf(['CPU','Memory','API','DB'])} ${randomOf(['Spike','Latency','Timeout','Error'])}`,
+                                description: 'Auto-generated demo event',
+                                severity: randomOf(severities),
+                                status: 'active',
+                                source: randomOf(['prometheus','datadog','newrelic','nagios','grafana']),
+                                timestamp: new Date().toISOString(),
+                                tags: ['live','demo'],
+                                __justAdded: true
+                            };
+                            next.unshift(newAlert);
+                            // remove animation flag after it plays once
+                            setTimeout(() => {
+                                setAlerts((curr)=> (Array.isArray(curr) ? curr.map(a => a.id === id ? { ...a, __justAdded: false } : a) : curr));
+                            }, 700);
+                            setEvents((ev) => [{
+                                t: new Date().toLocaleTimeString(),
+                                m: `New ${newAlert.severity} alert: ${newAlert.title}`,
+                                id,
+                                sev: newAlert.severity
+                            }, ...(ev||[])].slice(0,20));
+                            if (next.length > 20) next.pop();
+                        }
+                        // 30% mutate an existing alert
+                        else if (action < 0.9 && next.length) {
+                            const idx = Math.floor(Math.random() * next.length);
+                            const a = { ...next[idx] };
+                            if (Math.random() < 0.5) a.status = randomOf(statuses); else a.severity = randomOf(severities);
+                            a.timestamp = new Date().toISOString();
+                            next[idx] = a;
+                            setEvents((ev) => [{
+                                t: new Date().toLocaleTimeString(),
+                                m: `Updated alert ${a.id}: status=${a.status}, severity=${a.severity}`,
+                                id: a.id,
+                                sev: a.severity
+                            }, ...(ev||[])].slice(0,20));
+                        }
+                        // 10% resolve a random active alert
+                        else if (next.length) {
+                            const i = next.findIndex(a => a.status === 'active');
+                            if (i >= 0) {
+                                const r = { ...next[i], status: 'resolved', timestamp: new Date().toISOString() };
+                                next[i] = r;
+                                setEvents((ev) => [{
+                                    t: new Date().toLocaleTimeString(),
+                                    m: `Resolved alert ${r.id}`,
+                                    id: r.id,
+                                    sev: r.severity || 'info'
+                                }, ...(ev||[])].slice(0,20));
+                            }
+                        }
+
+                        return next;
+                    });
+
+                    // Subtle metric drift (+/-2%) with clamping
+                    const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+                    setNoiseReduction((v)=>clamp(v + (Math.random()*4-2), 75, 92));
+                    setDedupRate((v)=>clamp(v + (Math.random()*4-2), 60, 80));
+                    setCorrelationAcc((v)=>clamp(v + (Math.random()*4-2), 88, 98));
+
+                    // Auto-scroll events to top unless hovered
+                    const box = eventsRef.current;
+                    if (box && !isEventsHover) {
+                        box.scrollTop = 0;
+                    }
+                }, 8000);
+
+                setLiveTimerId(timer);
+                return () => { clearInterval(timer); setLiveTimerId(null); };
+            }, [isLive]);
 
             const initializeChart = () => {
                 setTimeout(() => {
@@ -250,6 +374,7 @@
             const filteredAlerts = alerts.filter(alert => {
                 if (filterSeverity !== 'all' && alert.severity !== filterSeverity) return false;
                 if (filterStatus !== 'all' && alert.status !== filterStatus) return false;
+                if (onlyActive && alert.status !== 'active') return false;
                 return true;
             });
 
@@ -286,37 +411,47 @@
             };
 
             const handleExport = (format) => {
-                const data = filteredAlerts.map(alert => ({
-                    id: alert.id,
-                    title: alert.title,
-                    severity: alert.severity,
-                    status: alert.status,
-                    source: alert.source,
-                    timestamp: alert.timestamp
-                }));
-                
-                if (format === 'csv') {
-                    const csv = [
-                        Object.keys(data[0]).join(','),
-                        ...data.map(row => Object.values(row).join(','))
-                    ].join('\\n');
-                    
-                    const blob = new Blob([csv], { type: 'text/csv' });
+                try {
+                    const rows = filteredAlerts.map(alert => ({
+                        id: alert.id,
+                        title: alert.title,
+                        severity: alert.severity,
+                        status: alert.status,
+                        source: alert.source,
+                        timestamp: alert.timestamp
+                    }));
+
+                    if (!rows.length) {
+                        alert('No alerts to export. Adjust filters and try again.');
+                        return;
+                    }
+
+                    let blob;
+                    if (format === 'csv') {
+                        const headers = ['id','title','severity','status','source','timestamp'];
+                        const csvLines = [
+                            headers.join(','),
+                            ...rows.map(r => headers.map(h => `${String(r[h]).replace(/"/g,'""')}`).join(','))
+                        ];
+                    const csv = csvLines.join('\\n');
+                    const BOM = '\\ufeff';
+                    blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+                    } else {
+                        const json = JSON.stringify(rows, null, 2);
+                        blob = new Blob([json], { type: 'application/json' });
+                    }
+
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `alerts_export_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.csv`;
+                    a.download = format === 'csv' ? 'alerts.csv' : `alerts_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+                    document.body.appendChild(a);
                     a.click();
+                    document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                } else if (format === 'json') {
-                    const json = JSON.stringify(data, null, 2);
-                    const blob = new Blob([json], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `alerts_export_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
+                } catch (e) {
+                    console.error('Export failed', e);
+                    alert('Export failed. Please try again.');
                 }
             };
 
@@ -325,13 +460,23 @@
                     {/* Header */}
                     <header className="bg-[#252538] shadow-lg border-b border-[#3a3a4a]">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex justify-between items-center py-4">
+                            <div className="flex flex-wrap justify-between items-center gap-3 py-4">
                                 <div className="flex items-center space-x-3">
                                     <div className="h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-xl">
                                         🛡️
                                     </div>
                                     <div>
-                                        <h1 className="text-xl font-bold text-white">MSP Alert Intelligence</h1>
+                                        <h1 className="text-xl font-bold text-white flex items-center space-x-2">
+                                            <span>MSP Alert Intelligence</span>
+                                            {/* Version marker to verify latest deploy */}
+                                            <span className="text-[11px] px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-300 border border-blue-500/30">LiveMode v1.1</span>
+                                            {isLive && (
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/40">
+                                                    <span className="w-2 h-2 bg-green-500 rounded-full mr-1 pulse-dot"></span>
+                                                    Live
+                                                </span>
+                                            )}
+                                        </h1>
                                         <p className="text-sm text-gray-400">AI-Powered Alert Management</p>
                                     </div>
                                 </div>
@@ -340,6 +485,13 @@
                                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                         <span>All Systems Operational</span>
                                     </div>
+                                    <button
+                                        onClick={() => setIsLive(v => !v)}
+                                        className="px-3 py-2 text-sm font-medium text-gray-300 bg-[#3a3a4a] border border-[#4a4a5a] rounded-xl hover:bg-[#4a4a5a] transition-colors"
+                                        aria-label="Toggle live mode"
+                                    >
+                                        {isLive ? '🟢 Live Mode: On' : '⚪ Live Mode: Off'}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -419,7 +571,7 @@
 
                             {/* Tab Content */}
                             <div className="p-6">
-                                {selectedView === 'alerts' && (
+                                        {selectedView === 'alerts' && (
                                     <div className="space-y-6">
                                         {/* Alert Controls */}
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -518,7 +670,13 @@
                                                 <option value="resolved">Resolved</option>
                                             </select>
                                             
-                                            <div className="text-sm text-gray-300">
+                                            <button
+                                                onClick={() => setOnlyActive(v => !v)}
+                                                className="px-3 py-2 border border-[#4a4a5a] rounded-xl text-sm bg-[#252538] text-white hover:bg-[#32324a]"
+                                            >
+                                                {onlyActive ? 'Showing: Only Active' : 'Toggle: Only Active'}
+                                            </button>
+                                            <div className="text-sm text-gray-300 ml-2">
                                                 Showing {filteredAlerts.length} of {alerts.length} alerts
                                             </div>
                                         </div>
@@ -526,7 +684,11 @@
                                         {/* Alerts List */}
                                         <div className="space-y-4">
                                             {filteredAlerts.map((alert) => (
-                                                <div key={alert.id} className="bg-[#252538] rounded-xl shadow-lg p-6 relative hover:shadow-xl transition-all duration-200 border border-[#3a3a4a]">
+                                                <div
+                                                    key={alert.id}
+                                                    data-alert-id={alert.id}
+                                                    className={`bg-[#252538] rounded-xl shadow-lg p-6 relative hover:shadow-xl transition-all duration-200 border border-[#3a3a4a] ${alert.__justAdded ? 'fade-in-up' : ''} ${highlightId===alert.id ? 'ring-2 ring-blue-500' : ''}`}
+                                                >
                                                     <div className="absolute top-4 left-4">
                                                         <button
                                                             onClick={() => handleAlertSelection(alert.id)}
@@ -658,6 +820,7 @@
                                 )}
 
                                 {selectedView === 'analytics' && (
+                                    <>
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                                         <div className="bg-[#252538] rounded-xl shadow-lg p-6 border border-[#3a3a4a]">
                                             <h3 className="text-lg font-semibold text-white mb-4">AI Agents Status</h3>
@@ -682,26 +845,26 @@
                                             <div className="space-y-3">
                                                 <div className="flex justify-between">
                                                     <span className="text-sm text-gray-300">Noise Reduction</span>
-                                                    <span className="text-sm font-medium text-white">80%</span>
+                                                    <span className="text-sm font-medium text-white">{Math.round(noiseReduction)}%</span>
                                                 </div>
                                                 <div className="w-full bg-[#3a3a4a] rounded-full h-2">
-                                                    <div className="bg-green-500 h-2 rounded-full" style={{width: '80%'}}></div>
+                                                    <div className="bg-green-500 h-2 rounded-full transition-all duration-500" style={{width: `${noiseReduction}%`}}></div>
                                                 </div>
                                                 
                                                 <div className="flex justify-between">
                                                     <span className="text-sm text-gray-300">Deduplication Rate</span>
-                                                    <span className="text-sm font-medium text-white">65%</span>
+                                                    <span className="text-sm font-medium text-white">{Math.round(dedupRate)}%</span>
                                                 </div>
                                                 <div className="w-full bg-[#3a3a4a] rounded-full h-2">
-                                                    <div className="bg-blue-500 h-2 rounded-full" style={{width: '65%'}}></div>
+                                                    <div className="bg-blue-500 h-2 rounded-full transition-all duration-500" style={{width: `${dedupRate}%`}}></div>
                                                 </div>
                                                 
                                                 <div className="flex justify-between">
                                                     <span className="text-sm text-gray-300">Correlation Accuracy</span>
-                                                    <span className="text-sm font-medium text-white">92%</span>
+                                                    <span className="text-sm font-medium text-white">{Math.round(correlationAcc)}%</span>
                                                 </div>
                                                 <div className="w-full bg-[#3a3a4a] rounded-full h-2">
-                                                    <div className="bg-purple-500 h-2 rounded-full" style={{width: '92%'}}></div>
+                                                    <div className="bg-purple-500 h-2 rounded-full transition-all duration-500" style={{width: `${correlationAcc}%`}}></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -713,6 +876,43 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {isLive && (
+                                        <div className="lg:col-span-2 bg-[#252538] rounded-xl shadow-lg p-6 border border-[#3a3a4a]">
+                                            <h3 className="text-lg font-semibold text-white mb-4">Live Events</h3>
+                                            <div
+                                                ref={eventsRef}
+                                                className="space-y-2 max-h-56 overflow-auto pr-2"
+                                                onMouseEnter={() => setIsEventsHover(true)}
+                                                onMouseLeave={() => setIsEventsHover(false)}
+                                            >
+                                                {(events||[]).length === 0 && (
+                                                    <div className="text-sm text-gray-400">No events yet. Live mode just started.</div>
+                                                )}
+                                                {(events||[]).map((e, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className="text-sm text-gray-300 flex items-center justify-between bg-[#2f2f46] rounded-md px-3 py-2 cursor-pointer"
+                                                        onClick={() => {
+                                                            if (!e.id) return;
+                                                            setHighlightId(null);
+                                                            setTimeout(() => {
+                                                                setHighlightId(e.id);
+                                                                const el = document.querySelector(`[data-alert-id="${e.id}"]`);
+                                                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                            }, 0);
+                                                        }}
+                                                    >
+                                                        <span className="inline-flex items-center">
+                                                            <span className={`${e.sev==='critical'?'bg-red-500':e.sev==='high'?'bg-orange-400':e.sev==='medium'?'bg-yellow-400':e.sev==='low'?'bg-green-500':'bg-sky-400'} w-2 h-2 rounded-full mr-2`}></span>
+                                                            {e.m}
+                                                        </span>
+                                                        <span className="text-xs text-gray-400">{e.t}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -722,18 +922,7 @@
                     <footer className="bg-[#252538] border-t border-[#3a3a4a] mt-8">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                             <div className="flex items-center justify-between text-sm text-gray-400">
-                                <div>
-                                    <span>Built on </span>
-                                    <a 
-                                        href="https://github.com/keephq/keep" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="text-blue-400 hover:text-blue-300 font-medium"
-                                    >
-                                        Keep
-                                    </a>
-                                    <span> - Open-source alert management platform</span>
-                                </div>
+                                <div className="text-gray-300">MSP Alert Intelligence Prototype • Hackathon Demo</div>
                                 <div className="text-gray-500">
                                     MSP Extensions © 2025
                                 </div>
