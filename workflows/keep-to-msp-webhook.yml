@@ -1,0 +1,67 @@
+workflow:
+  id: keep-to-msp-webhook
+  name: Keep → MSP Alert Intelligence Webhook
+  description: |
+    Forward alerts from Keep to MSP Alert Intelligence backend for:
+    - Noise reduction and deduplication
+    - Strands agent correlation
+    - Bedrock AI triage and summarization
+    
+  triggers:
+    - type: alert
+      # Trigger on any new or updated alert
+      filters:
+        # Optional: only forward specific severities
+        - key: severity
+          value: r"(critical|high|medium)"
+          operator: regex
+        # Optional: only forward firing alerts
+        - key: status
+          value: firing
+  
+  actions:
+    - name: forward-to-msp-backend
+      provider:
+        type: webhook
+        config: "{{ providers.msp-backend-webhook }}"
+        with:
+          # Your MSP backend endpoint
+          url: "https://your-backend.example.com/api/v1/ingest/keep"
+          method: POST
+          headers:
+            Content-Type: "application/json"
+            # HMAC signature for authentication
+            X-Keep-Signature: "{{ hmac('sha256', secrets.MSP_WEBHOOK_SECRET, body) }}"
+          body: |
+            {
+              "event": "alert.{{ alert.status == 'resolved' ? 'updated' : 'created' }}",
+              "alert": {
+                "id": "{{ alert.id }}",
+                "fingerprint": "{{ alert.fingerprint }}",
+                "source": "{{ alert.source }}",
+                "severity": "{{ alert.severity }}",
+                "status": "{{ alert.status }}",
+                "title": "{{ alert.name }}",
+                "labels": {{ alert.labels | tojson }},
+                "annotations": {{ alert.annotations | tojson }},
+                "ts": "{{ alert.timestamp }}",
+                "started_at": "{{ alert.startedAt }}"
+              }
+            }
+          # Optional: retry configuration
+          retry:
+            count: 3
+            delay: 5
+            backoff: exponential
+    
+    - name: log-webhook-result
+      if: "{{ steps.forward-to-msp-backend.status == 'success' }}"
+      provider:
+        type: console
+        with:
+          message: |
+            Successfully forwarded alert to MSP backend:
+            - Alert: {{ alert.name }}
+            - Fingerprint: {{ alert.fingerprint }}
+            - Response: {{ steps.forward-to-msp-backend.result }}
+
