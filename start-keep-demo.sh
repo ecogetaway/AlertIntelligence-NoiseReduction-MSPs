@@ -1,124 +1,59 @@
 #!/bin/bash
 
-# Keep Integration Demo - Quick Start Script
-# Starts all services and runs the demo
+# MSP Alert Intelligence Platform - Keep Integration Demo Startup Script
+# This script starts a simple HTTP server to serve all demo files including Keep integration
 
-set -e
-
-echo "🚀 Starting Keep Integration Demo"
-echo "================================"
-
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Configuration
-BACKEND_URL="http://localhost:8000"
-FRONTEND_URL="http://localhost:3000"
-
-echo -e "${BLUE}📋 Demo Setup${NC}"
-echo "Backend: $BACKEND_URL"
-echo "Frontend: $FRONTEND_URL"
+echo "🚀 Starting MSP Alert Intelligence Platform - Keep Integration Demo..."
 echo ""
 
-# Function to check if service is running
-check_service() {
-    local url=$1
-    local name=$2
-    
-    if curl -s "$url/health" > /dev/null 2>&1; then
-        echo -e "${GREEN}✅ $name is running${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ $name is not running${NC}"
-        return 1
-    fi
-}
-
-# Check if services are already running
-echo -e "${BLUE}🔍 Checking Services${NC}"
-BACKEND_RUNNING=false
-FRONTEND_RUNNING=false
-
-if check_service "$BACKEND_URL" "Backend"; then
-    BACKEND_RUNNING=true
-fi
-
-if check_service "$FRONTEND_URL" "Frontend"; then
-    FRONTEND_RUNNING=true
-fi
-
-# Start backend if not running
-if [ "$BACKEND_RUNNING" = false ]; then
-    echo -e "${YELLOW}🚀 Starting Backend...${NC}"
-    echo "Please run in a separate terminal:"
-    echo "cd backend && python main.py"
-    echo ""
-    echo "Press Enter when backend is running..."
-    read -r
-fi
-
-# Start frontend if not running
-if [ "$FRONTEND_RUNNING" = false ]; then
-    echo -e "${YELLOW}🚀 Starting Frontend...${NC}"
-    echo "Please run in a separate terminal:"
-    echo "cd frontend && npm run dev"
-    echo ""
-    echo "Press Enter when frontend is running..."
-    read -r
-fi
-
-# Verify services are running
-echo -e "${BLUE}🔍 Verifying Services${NC}"
-if ! check_service "$BACKEND_URL" "Backend"; then
-    echo -e "${RED}❌ Backend is not running. Please start it first.${NC}"
+# Check if Python is installed
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Python 3 is not installed. Please install Python 3 first."
     exit 1
 fi
 
-if ! check_service "$FRONTEND_URL" "Frontend"; then
-    echo -e "${RED}❌ Frontend is not running. Please start it first.${NC}"
+# Check if demo files exist
+if [ ! -f "keep-integration-demo.html" ]; then
+    echo "❌ keep-integration-demo.html not found. Please make sure you're in the project directory."
     exit 1
 fi
 
-echo ""
-echo -e "${GREEN}✅ All services are running!${NC}"
-echo ""
-
-# Run the demo
-echo -e "${BLUE}🎬 Running Keep Integration Demo${NC}"
-echo "=================================="
-echo ""
-
-# Run the demo script
-if [ -f "scripts/demo-keep-integration.sh" ]; then
-    chmod +x scripts/demo-keep-integration.sh
-    ./scripts/demo-keep-integration.sh
-else
-    echo -e "${RED}❌ Demo script not found${NC}"
+if [ ! -f "frontend-demo.html" ]; then
+    echo "❌ frontend-demo.html not found. Please make sure you're in the project directory."
     exit 1
 fi
 
+if [ ! -f "frontend-simple.html" ]; then
+    echo "❌ frontend-simple.html not found. Please make sure you're in the project directory."
+    exit 1
+fi
+
+echo "✅ All demo files found"
 echo ""
-echo -e "${GREEN}🎉 Demo Complete!${NC}"
+echo "🎯 Keep Integration Demo Features:"
+echo "- ✅ Keep Foundation Integration"
+echo "- ✅ MSP-Specific Enhancements"
+echo "- ✅ AI-Powered Alert Correlation"
+echo "- ✅ 80% Noise Reduction"
+echo "- ✅ Real-time Dashboard"
+echo "- ✅ Webhook Integration Testing"
 echo ""
-echo -e "${BLUE}📊 Demo Summary${NC}"
-echo "================"
-echo "✅ Keep webhook integration demonstrated"
-echo "✅ MSP noise reduction shown"
-echo "✅ AI correlation with Bedrock highlighted"
-echo "✅ SLA management configured"
-echo "✅ Database integration functional"
-echo "✅ Frontend dashboard live"
+echo "📍 Demo Links Available:"
+echo "🔗 Keep Integration Demo: http://localhost:3000/keep-integration-demo.html"
+echo "🔗 Main Dashboard: http://localhost:3000/frontend-demo.html"
+echo "🔗 Static Demo: http://localhost:3000/frontend-simple.html"
+echo "🔗 Landing Page: http://localhost:3000/index.html"
 echo ""
-echo -e "${BLUE}🎯 Next Steps${NC}"
-echo "============="
-echo "1. Open frontend: $FRONTEND_URL/frontend-demo.html"
-echo "2. Show live alert processing"
-echo "3. Demonstrate noise reduction"
-echo "4. Highlight AI correlation"
-echo "5. Explain Keep integration benefits"
+echo "🎯 What you can do in the Keep Integration Demo:"
+echo "- Test Keep webhook integration"
+echo "- View Keep Foundation features"
+echo "- See MSP enhancements in action"
+echo "- Test AI correlation and noise reduction"
+echo "- Explore the integration flow"
 echo ""
-echo -e "${GREEN}🚀 Demo Ready for Presentation!${NC}"
+echo "Press Ctrl+C to stop the server"
+echo ""
+
+# Start a simple HTTP server on port 3000
+echo "🚀 Starting HTTP server on port 3000..."
+python3 -m http.server 3000

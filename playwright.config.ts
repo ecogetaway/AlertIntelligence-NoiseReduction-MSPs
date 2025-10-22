@@ -25,7 +25,7 @@ export default defineConfig({
   
   /* Reporter to use */
   reporter: [
-    ['html', { outputFolder: 'test-results/html' }],
+    ['html', { outputFolder: 'playwright-report' }],
     ['json', { outputFile: 'test-results/results.json' }],
     ['list'],
   ],
@@ -48,17 +48,25 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'smoke-tests',
+      testMatch: '**/smoke.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
       name: 'chromium',
+      testIgnore: '**/smoke.spec.ts',
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
       name: 'firefox',
+      testIgnore: '**/smoke.spec.ts',
       use: { ...devices['Desktop Firefox'] },
     },
 
     {
       name: 'webkit',
+      testIgnore: '**/smoke.spec.ts',
       use: { ...devices['Desktop Safari'] },
     },
 
@@ -86,7 +94,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'cd backend && source venv/bin/activate && python -m uvicorn main:app --port 8000',
+      command: 'cd backend && python3 -m pip install -r requirements.txt && python3 -m uvicorn main:app --port 8000 --host 0.0.0.0',
       url: 'http://localhost:8000/health',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
@@ -95,6 +103,7 @@ export default defineConfig({
         DEBUG: 'true',
         KEEP_WEBHOOK_SECRET: 'test-secret-e2e',
         BEDROCK_AGENTCORE_ENABLED: 'false', // Disable for tests unless configured
+        PYTHONPATH: '.',
       },
     },
     {
