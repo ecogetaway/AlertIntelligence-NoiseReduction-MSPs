@@ -66,6 +66,9 @@ temp/
 
 # Keep reference (local only)
 keep-reference/
+external/
 
 # Alembic
 alembic/versions/*.pyc
+# Local Netlify folder
+.netlify

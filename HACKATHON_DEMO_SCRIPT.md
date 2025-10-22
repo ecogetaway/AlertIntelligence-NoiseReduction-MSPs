@@ -10,7 +10,7 @@
 ## 🎯 **Demo Flow (Timeline)**
 
 ### **0:00 - 0:30 | Introduction & Problem Statement**
-> **Script**: "Hi! I'm presenting our MSP Alert Intelligence Platform. Managed Service Providers face alert fatigue with thousands of alerts daily. Our solution reduces noise by 80% using AI-powered correlation and intelligent filtering."
+> **Script**: "Hi! I'm presenting our MSP Alert Intelligence Platform. Managed Service Providers face alert fatigue with thousands of alerts daily. Our solution reduces noise by 80% using AI-powered correlation and intelligent filtering. This demo is standalone; for production we may integrate with the open-source Keep platform for provider integrations and workflows."
 
 **Visual**: Show the dark-themed dashboard with summary cards
 - Point to the 4 summary cards at the top
@@ -54,7 +54,7 @@
 5. **Explain Metrics**: "This shows how we reduce alerts from 65 to 20 per hour"
 
 #### **4. Export & Integration (30 seconds)**
-> **Script**: "Export functionality and integration with existing tools."
+> **Script**: "Export functionality and integration with existing tools. In production, we can hook this into provider integrations via Keep, but today's demo runs entirely standalone."
 
 **Actions**:
 1. **Switch back to Alerts Tab**: Click "Alerts" tab
@@ -66,13 +66,13 @@
 
 ### **2:30 - 3:30 | Technical Highlights**
 
-#### **5. Built on Keep Foundation (30 seconds)**
-> **Script**: "We built on Keep, an open-source alert management platform, adding MSP-specific AI features."
+#### **5. Production Foundation (30 seconds)**
+> **Script**: "For production, we plan to integrate with Keep (open-source alert management) to leverage 100+ provider integrations and workflows. Today’s demo is standalone and showcases our MSP-specific AI features."
 
 **Actions**:
-1. **Show Architecture**: Point to the "Built on Keep" footer
-2. **Explain Value**: "This gives us enterprise-grade reliability with our AI innovations"
-3. **Show Scalability**: "Supports 100+ integrations out of the box"
+1. **Show Architecture**: Briefly reference optional Keep layer in docs
+2. **Explain Value**: "Optional foundation + our AI features = speed + reliability"
+3. **Scalability**: "Keep’s ecosystem provides 100+ integrations if/when needed"
 
 #### **6. Mobile Responsive (30 seconds)**
 > **Script**: "Fully responsive design works on any device."
@@ -128,8 +128,8 @@
 ## 🚀 **Demo Links & Setup**
 
 ### **Live Demo URLs:**
-- **Frontend**: `http://localhost:3000/frontend-demo.html`
-- **Backend API**: `http://localhost:8000/docs`
+- **Frontend**: `http://localhost:3000/frontend-demo.html` (standalone demo)
+- **Backend API**: `http://localhost:8000/docs` (optional during development)
 - **GitHub**: `https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs`
 
 ### **Quick Start Commands:**

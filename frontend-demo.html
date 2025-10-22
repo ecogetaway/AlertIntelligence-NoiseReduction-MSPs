@@ -123,6 +123,27 @@
             const [highlightId, setHighlightId] = useState(null);
             const eventsRef = useRef(null);
             const [isEventsHover, setIsEventsHover] = useState(false);
+            
+            // New features state
+            const [groupedView, setGroupedView] = useState(true);
+            const [selectedAlert, setSelectedAlert] = useState(null);
+            const [showBulkDialog, setShowBulkDialog] = useState(false);
+            const [bulkAction, setBulkAction] = useState('acknowledge');
+            const [bulkReason, setBulkReason] = useState('');
+            const [filterPresets] = useState([
+                { name: 'Critical Only', filters: { severity: 'critical', status: 'all' } },
+                { name: 'Active Incidents', filters: { severity: 'all', status: 'active' } },
+                { name: 'Noisy Sources', filters: { severity: 'all', status: 'all' } }
+            ]);
+            const [customPresets, setCustomPresets] = useState(() => {
+                const saved = localStorage.getItem('msp-presets');
+                return saved ? JSON.parse(saved) : [];
+            });
+            const [simulatorEnabled, setSimulatorEnabled] = useState(false);
+            const [simulatorInterval, setSimulatorInterval] = useState(3000);
+            const [simulatorBurst, setSimulatorBurst] = useState(false);
+            const [simulatorSeverity, setSimulatorSeverity] = useState('balanced');
+            const [simulatorTimerId, setSimulatorTimerId] = useState(null);
 
             // Mock data
             const mockAlerts = [
@@ -309,6 +330,65 @@
                 return () => { clearInterval(timer); setLiveTimerId(null); };
             }, [isLive]);
 
+            // Live Simulator effect
+            useEffect(() => {
+                if (!simulatorEnabled) {
+                    if (simulatorTimerId) {
+                        clearInterval(simulatorTimerId);
+                        setSimulatorTimerId(null);
+                    }
+                    return;
+                }
+
+                const randomOf = (arr) => arr[Math.floor(Math.random() * arr.length)];
+                const severities = simulatorSeverity === 'critical' 
+                    ? ['high', 'critical'] 
+                    : simulatorSeverity === 'high' 
+                    ? ['medium', 'high'] 
+                    : ['info', 'low', 'medium', 'high'];
+
+                const timer = setInterval(() => {
+                    const count = simulatorBurst ? 3 : 1;
+                    const newAlerts = [];
+                    
+                    for (let i = 0; i < count; i++) {
+                        const sev = randomOf(severities);
+                        const id = `sim-${Date.now()}-${i}`;
+                        newAlerts.push({
+                            id,
+                            title: `Simulated ${sev.toUpperCase()} Alert`,
+                            description: 'Live simulator generated alert',
+                            severity: sev,
+                            status: 'active',
+                            source: 'simulator',
+                            timestamp: new Date().toISOString(),
+                            tags: ['sim', `host-${(Date.now() % 7) + 1}`],
+                            __justAdded: true
+                        });
+                    }
+
+                    setAlerts((prev) => {
+                        const next = Array.isArray(prev) ? [...prev] : [];
+                        newAlerts.forEach(alert => {
+                            next.unshift(alert);
+                            setTimeout(() => {
+                                setAlerts((curr) => (Array.isArray(curr) ? curr.map(a => a.id === alert.id ? { ...a, __justAdded: false } : a) : curr));
+                            }, 700);
+                            setEvents((ev) => [{
+                                t: new Date().toLocaleTimeString(),
+                                m: `🎮 Simulator: ${alert.severity} alert - ${alert.title}`,
+                                id: alert.id,
+                                sev: alert.severity
+                            }, ...(ev || [])].slice(0, 20));
+                        });
+                        return next.slice(0, 50); // Cap at 50 alerts
+                    });
+                }, simulatorInterval);
+
+                setSimulatorTimerId(timer);
+                return () => clearInterval(timer);
+            }, [simulatorEnabled, simulatorInterval, simulatorBurst, simulatorSeverity]);
+
             const initializeChart = () => {
                 setTimeout(() => {
                     const ctx = document.getElementById('alertTrendsChart');
@@ -453,6 +533,55 @@
                     console.error('Export failed', e);
                     alert('Export failed. Please try again.');
                 }
+            };
+
+            // New feature handlers
+            const applyPreset = (preset) => {
+                setFilterSeverity(preset.filters.severity);
+                setFilterStatus(preset.filters.status);
+            };
+
+            const saveCustomPreset = () => {
+                const name = prompt('Enter preset name:');
+                if (!name) return;
+                
+                const newPreset = {
+                    name,
+                    filters: { severity: filterSeverity, status: filterStatus }
+                };
+                
+                const updated = [...customPresets, newPreset];
+                setCustomPresets(updated);
+                localStorage.setItem('msp-presets', JSON.stringify(updated));
+                alert(`Preset "${name}" saved!`);
+            };
+
+            const deleteCustomPreset = () => {
+                const name = prompt('Enter preset name to delete:');
+                if (!name) return;
+                
+                const updated = customPresets.filter(p => p.name !== name);
+                setCustomPresets(updated);
+                localStorage.setItem('msp-presets', JSON.stringify(updated));
+                alert(`Preset "${name}" deleted!`);
+            };
+
+            const handleBulkConfirm = () => {
+                handleBulkAction(bulkAction);
+                setShowBulkDialog(false);
+                setBulkReason('');
+            };
+
+            const groupAlertsByIncident = (alerts) => {
+                const grouped = {};
+                alerts.forEach(alert => {
+                    const key = alert.incident_id || alert.fingerprint || `alert-${alert.id}`;
+                    if (!grouped[key]) {
+                        grouped[key] = [];
+                    }
+                    grouped[key].push(alert);
+                });
+                return Object.entries(grouped);
             };
 
             return (
@@ -645,6 +774,112 @@
                                             </div>
                                         )}
 
+                                        {/* Live Simulator */}
+                                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 flex items-center justify-between">
+                                            <div className="text-sm font-medium text-yellow-300">
+                                                Live Simulator {simulatorEnabled ? 'ON' : 'OFF'}
+                                            </div>
+                                            <div className="flex items-center gap-3 flex-wrap">
+                                                <label className="text-xs text-gray-300 flex items-center gap-1">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={simulatorEnabled}
+                                                        onChange={(e) => setSimulatorEnabled(e.target.checked)}
+                                                        className="rounded"
+                                                    />
+                                                    Enable
+                                                </label>
+                                                <label className="text-xs text-gray-300 flex items-center gap-1">
+                                                    Interval
+                                                    <input 
+                                                        type="number" 
+                                                        value={simulatorInterval}
+                                                        onChange={(e) => setSimulatorInterval(Number(e.target.value))}
+                                                        className="w-20 px-2 py-1 rounded border border-[#4a4a5a] bg-[#252538] text-white"
+                                                        min="500"
+                                                        step="500"
+                                                    />
+                                                    ms
+                                                </label>
+                                                <label className="text-xs text-gray-300 flex items-center gap-1">
+                                                    <input 
+                                                        type="checkbox"
+                                                        checked={simulatorBurst}
+                                                        onChange={(e) => setSimulatorBurst(e.target.checked)}
+                                                        className="rounded"
+                                                    />
+                                                    Burst
+                                                </label>
+                                                <select
+                                                    value={simulatorSeverity}
+                                                    onChange={(e) => setSimulatorSeverity(e.target.value)}
+                                                    className="text-xs px-2 py-1 rounded border border-[#4a4a5a] bg-[#252538] text-white"
+                                                    aria-label="Severity mix"
+                                                >
+                                                    <option value="balanced">Balanced</option>
+                                                    <option value="high">High</option>
+                                                    <option value="critical">Critical</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        {/* Filter Presets Bar */}
+                                        <div className="bg-[#3a3a4a] border border-[#4a4a5a] rounded-xl px-3 py-2 flex items-center justify-between flex-wrap gap-2">
+                                            <div className="flex items-center gap-2 overflow-x-auto">
+                                                <span className="text-gray-300 text-sm flex items-center gap-1">
+                                                    <span>🎚️</span> Presets:
+                                                </span>
+                                                {filterPresets.map((preset, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => applyPreset(preset)}
+                                                        className="px-2 py-1 text-xs rounded-md bg-[#252538] text-gray-200 hover:bg-[#4a4a5a] whitespace-nowrap border border-[#4a4a5a]"
+                                                        aria-label={`Apply preset ${preset.name}`}
+                                                    >
+                                                        {preset.name}
+                                                    </button>
+                                                ))}
+                                                {customPresets.map((preset, idx) => (
+                                                    <button
+                                                        key={`custom-${idx}`}
+                                                        onClick={() => applyPreset(preset)}
+                                                        className="px-2 py-1 text-xs rounded-md bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 whitespace-nowrap border border-blue-500/30"
+                                                        aria-label={`Apply preset ${preset.name}`}
+                                                    >
+                                                        ⭐ {preset.name}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={saveCustomPreset}
+                                                    className="px-2 py-1 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                                                    aria-label="Save current filters as preset"
+                                                >
+                                                    Save view
+                                                </button>
+                                                {customPresets.length > 0 && (
+                                                    <button
+                                                        onClick={deleteCustomPreset}
+                                                        className="px-2 py-1 text-xs rounded-md bg-[#252538] text-gray-300 hover:bg-[#4a4a5a] border border-[#4a4a5a]"
+                                                    >
+                                                        Delete preset
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Grouping Toggle */}
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => setGroupedView(!groupedView)}
+                                                className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-300 bg-[#3a3a4a] border border-[#4a4a5a] rounded-xl hover:bg-[#4a4a5a] transition-colors"
+                                            >
+                                                <span>{groupedView ? '📋' : '📊'}</span>
+                                                <span>{groupedView ? 'Grouped by Incident' : 'All Alerts'}</span>
+                                            </button>
+                                        </div>
+
                                         {/* Basic Filters */}
                                         <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                                             <select
@@ -683,57 +918,92 @@
 
                                         {/* Alerts List */}
                                         <div className="space-y-4">
-                                            {filteredAlerts.map((alert) => (
-                                                <div
-                                                    key={alert.id}
-                                                    data-alert-id={alert.id}
-                                                    className={`bg-[#252538] rounded-xl shadow-lg p-6 relative hover:shadow-xl transition-all duration-200 border border-[#3a3a4a] ${alert.__justAdded ? 'fade-in-up' : ''} ${highlightId===alert.id ? 'ring-2 ring-blue-500' : ''}`}
-                                                >
-                                                    <div className="absolute top-4 left-4">
-                                                        <button
-                                                            onClick={() => handleAlertSelection(alert.id)}
-                                                            className="p-1 hover:bg-[#3a3a4a] rounded-lg transition-colors"
-                                                        >
-                                                            <span className="text-xl">
-                                                                {selectedAlerts.includes(alert.id) ? '☑️' : '☐'}
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                                    
-                                                    <div className="ml-8">
-                                                        <div className="flex items-center justify-between">
-                                                            <h3 className="text-lg font-semibold text-white">{alert.title}</h3>
-                                                            <div className="flex items-center space-x-2">
-                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium alert-severity-${alert.severity}`}>
-                                                                    {alert.severity}
-                                                                </span>
-                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                                    alert.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                                                                    alert.status === 'acknowledged' ? 'bg-yellow-100 text-yellow-800' :
-                                                                    'bg-red-100 text-red-800'
-                                                                }`}>
-                                                                    {alert.status}
+                                            {groupedView ? (
+                                                // Grouped View
+                                                groupAlertsByIncident(filteredAlerts).map(([groupKey, groupAlerts]) => (
+                                                    <div
+                                                        key={groupKey}
+                                                        className="bg-[#252538] rounded-xl shadow-lg p-6 border border-[#3a3a4a] hover:border-[#4a4a5a] transition-all cursor-pointer"
+                                                        onClick={() => setSelectedAlert(groupAlerts[0])}
+                                                    >
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <div className="flex items-center gap-3">
+                                                                <h3 className="text-lg font-semibold text-white">{groupAlerts[0].title}</h3>
+                                                                <span className="px-2 py-1 bg-blue-600/20 text-blue-300 rounded-md text-xs border border-blue-500/30">
+                                                                    {groupAlerts.length} alert{groupAlerts.length > 1 ? 's' : ''}
                                                                 </span>
                                                             </div>
-                                                        </div>
-                                                        <p className="text-gray-300 mt-2">{alert.description}</p>
-                                                        <div className="flex items-center justify-between mt-4">
-                                                            <div className="flex items-center space-x-4 text-sm text-gray-400">
-                                                                <span>Source: {alert.source}</span>
-                                                                <span>•</span>
-                                                                <span>{new Date(alert.timestamp).toLocaleString()}</span>
-                                                            </div>
-                                                            <div className="flex items-center space-x-2">
-                                                                {alert.tags.map(tag => (
-                                                                    <span key={tag} className="px-2 py-1 bg-[#3a3a4a] text-gray-300 rounded-lg text-xs">
-                                                                        {tag}
+                                                            <div className="flex items-center gap-2">
+                                                                {groupAlerts.some(a => a.source === 'simulator') && (
+                                                                    <span className="px-2 py-1 bg-purple-600/20 text-purple-300 rounded-md text-xs border border-purple-500/30">
+                                                                        🤖 AI
                                                                     </span>
-                                                                ))}
+                                                                )}
+                                                                <span className={`px-3 py-1 rounded-full text-xs font-medium alert-severity-${Math.max(...groupAlerts.map(a => ['info','low','medium','high','critical'].indexOf(a.severity)))}`}>
+                                                                    {groupAlerts.reduce((max, a) => ['info','low','medium','high','critical'].indexOf(a.severity) > ['info','low','medium','high','critical'].indexOf(max.severity) ? a : max).severity}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-gray-400 text-sm">
+                                                            Sources: {[...new Set(groupAlerts.map(a => a.source))].join(', ')}
+                                                        </p>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                // List View
+                                                filteredAlerts.map((alert) => (
+                                                    <div
+                                                        key={alert.id}
+                                                        data-alert-id={alert.id}
+                                                        className={`bg-[#252538] rounded-xl shadow-lg p-6 relative hover:shadow-xl transition-all duration-200 border border-[#3a3a4a] ${alert.__justAdded ? 'fade-in-up' : ''} ${highlightId===alert.id ? 'ring-2 ring-blue-500' : ''}`}
+                                                        onClick={() => setSelectedAlert(alert)}
+                                                    >
+                                                        <div className="absolute top-4 left-4">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleAlertSelection(alert.id); }}
+                                                                className="p-1 hover:bg-[#3a3a4a] rounded-lg transition-colors"
+                                                            >
+                                                                <span className="text-xl">
+                                                                    {selectedAlerts.includes(alert.id) ? '☑️' : '☐'}
+                                                                </span>
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        <div className="ml-8">
+                                                            <div className="flex items-center justify-between">
+                                                                <h3 className="text-lg font-semibold text-white">{alert.title}</h3>
+                                                                <div className="flex items-center space-x-2">
+                                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium alert-severity-${alert.severity}`}>
+                                                                        {alert.severity}
+                                                                    </span>
+                                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                                                        alert.status === 'resolved' ? 'bg-green-100 text-green-800' :
+                                                                        alert.status === 'acknowledged' ? 'bg-yellow-100 text-yellow-800' :
+                                                                        'bg-red-100 text-red-800'
+                                                                    }`}>
+                                                                        {alert.status}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-gray-300 mt-2">{alert.description}</p>
+                                                            <div className="flex items-center justify-between mt-4">
+                                                                <div className="flex items-center space-x-4 text-sm text-gray-400">
+                                                                    <span>Source: {alert.source}</span>
+                                                                    <span>•</span>
+                                                                    <span>{new Date(alert.timestamp).toLocaleString()}</span>
+                                                                </div>
+                                                                <div className="flex items-center space-x-2">
+                                                                    {alert.tags.map(tag => (
+                                                                        <span key={tag} className="px-2 py-1 bg-[#3a3a4a] text-gray-300 rounded-lg text-xs">
+                                                                            {tag}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))
+                                            )}
                                         </div>
 
                                         {/* Bulk Operations */}
@@ -756,30 +1026,12 @@
                                                 
                                                 <div className="flex space-x-2">
                                                     <button
-                                                        onClick={() => handleBulkAction('acknowledge')}
+                                                        onClick={() => setShowBulkDialog(true)}
                                                         disabled={loading}
-                                                        className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                                                        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
                                                     >
-                                                        <span>✅</span>
-                                                        <span>Acknowledge</span>
-                                                    </button>
-                                                    
-                                                    <button
-                                                        onClick={() => handleBulkAction('suppress')}
-                                                        disabled={loading}
-                                                        className="flex items-center space-x-2 px-3 py-2 bg-orange-600 text-white rounded-xl text-sm font-medium hover:bg-orange-700 disabled:opacity-50 transition-colors"
-                                                    >
-                                                        <span>🔕</span>
-                                                        <span>Suppress</span>
-                                                    </button>
-                                                    
-                                                    <button
-                                                        onClick={() => handleBulkAction('resolve')}
-                                                        disabled={loading}
-                                                        className="flex items-center space-x-2 px-3 py-2 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
-                                                    >
-                                                        <span>✓</span>
-                                                        <span>Resolve</span>
+                                                        <span>⚡</span>
+                                                        <span>Bulk Actions</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -918,6 +1170,171 @@
                         </div>
                     </main>
                     
+                    {/* Bulk Operations Dialog */}
+                    {showBulkDialog && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center">
+                            <div className="fixed inset-0 bg-black/60" onClick={() => setShowBulkDialog(false)} />
+                            <div className="relative bg-[#252538] border border-[#4a4a5a] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-white">Bulk Action</h3>
+                                    <button
+                                        onClick={() => setShowBulkDialog(false)}
+                                        className="p-2 rounded hover:bg-[#3a3a4a] text-gray-400 hover:text-white"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-sm text-gray-300">
+                                            {selectedAlerts.length} alert{selectedAlerts.length > 1 ? 's' : ''} selected
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-2">Action</label>
+                                        <select
+                                            value={bulkAction}
+                                            onChange={(e) => setBulkAction(e.target.value)}
+                                            className="w-full px-3 py-2 rounded-xl border border-[#4a4a5a] bg-[#181824] text-white"
+                                        >
+                                            <option value="acknowledge">Acknowledge</option>
+                                            <option value="suppress">Suppress</option>
+                                            <option value="resolve">Resolve</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-2">Reason (optional)</label>
+                                        <textarea
+                                            value={bulkReason}
+                                            onChange={(e) => setBulkReason(e.target.value)}
+                                            className="w-full px-3 py-2 rounded-xl border border-[#4a4a5a] bg-[#181824] text-white"
+                                            rows={3}
+                                            placeholder="Why are you performing this action?"
+                                        />
+                                    </div>
+                                    <div className="flex gap-3 justify-end">
+                                        <button
+                                            onClick={() => setShowBulkDialog(false)}
+                                            className="px-4 py-2 rounded-xl bg-[#3a3a4a] text-gray-300 hover:bg-[#4a4a5a]"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleBulkConfirm}
+                                            className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+                                        >
+                                            Confirm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Alert Detail Drawer */}
+                    {selectedAlert && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-end">
+                            <div className="fixed inset-0 bg-black/60" onClick={() => setSelectedAlert(null)} />
+                            <div className="relative bg-[#252538] h-full w-full max-w-2xl shadow-2xl overflow-y-auto border-l border-[#4a4a5a]">
+                                <div className="p-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-2xl font-bold text-white">Alert Details</h2>
+                                        <button
+                                            onClick={() => setSelectedAlert(null)}
+                                            className="p-2 rounded-lg hover:bg-[#3a3a4a] text-gray-400 hover:text-white"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {/* Title & Status */}
+                                        <div>
+                                            <h3 className="text-xl font-semibold text-white mb-2">{selectedAlert.title}</h3>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium alert-severity-${selectedAlert.severity}`}>
+                                                    {selectedAlert.severity}
+                                                </span>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                                    selectedAlert.status === 'resolved' ? 'bg-green-100 text-green-800' :
+                                                    selectedAlert.status === 'acknowledged' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {selectedAlert.status}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Description */}
+                                        <div className="bg-[#3a3a4a] border border-[#4a4a5a] rounded-xl p-4">
+                                            <h4 className="text-sm font-semibold text-white mb-2">Description</h4>
+                                            <p className="text-gray-300 text-sm">{selectedAlert.description}</p>
+                                        </div>
+
+                                        {/* AI Triage (if available) */}
+                                        {selectedAlert.source === 'simulator' && (
+                                            <div className="bg-purple-600/10 border border-purple-500/30 rounded-xl p-4">
+                                                <div className="flex items-start gap-2 mb-3">
+                                                    <span className="text-2xl">🤖</span>
+                                                    <h4 className="text-sm font-semibold text-purple-300">AI Triage</h4>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <div>
+                                                        <span className="text-xs text-purple-400 font-medium">Severity Classification:</span>
+                                                        <p className="text-white text-sm">{selectedAlert.severity.toUpperCase()}</p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-xs text-purple-400 font-medium">Summary:</span>
+                                                        <p className="text-white text-sm">This is a simulated alert for testing purposes.</p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-xs text-purple-400 font-medium">Recommended Actions:</span>
+                                                        <ul className="list-disc list-inside text-white text-sm mt-1">
+                                                            <li>Review alert details</li>
+                                                            <li>Check affected systems</li>
+                                                            <li>Test the simulator controls</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Labels & Tags */}
+                                        <div className="bg-[#3a3a4a] border border-[#4a4a5a] rounded-xl p-4">
+                                            <h4 className="text-sm font-semibold text-white mb-3">Labels & Tags</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedAlert.tags.map(tag => (
+                                                    <span key={tag} className="px-3 py-1 bg-[#252538] text-gray-300 rounded-lg text-xs border border-[#4a4a5a]">
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Metadata */}
+                                        <div className="bg-[#3a3a4a] border border-[#4a4a5a] rounded-xl p-4">
+                                            <h4 className="text-sm font-semibold text-white mb-3">Metadata</h4>
+                                            <div className="space-y-2 text-sm">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400">Source:</span>
+                                                    <span className="text-white">{selectedAlert.source}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400">Created:</span>
+                                                    <span className="text-white">{new Date(selectedAlert.timestamp).toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400">Alert ID:</span>
+                                                    <span className="text-white font-mono text-xs">{selectedAlert.id}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Footer */}
                     <footer className="bg-[#252538] border-t border-[#3a3a4a] mt-8">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

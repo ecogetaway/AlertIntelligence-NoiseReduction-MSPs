@@ -17,6 +17,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:codegen": "playwright codegen http://localhost:3000/frontend-demo.html",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -38,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.14"

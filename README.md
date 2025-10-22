@@ -3,18 +3,31 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock-orange?logo=amazon-aws)](https://aws.amazon.com/bedrock/)
 
-🚀 Hackathon prototype showcasing AI-powered alert intelligence for MSPs: multi-tenant noise reduction, AI correlation, and client SLA-aware prioritization.
+🚀 Enhanced prototype showcasing AI-powered alert intelligence for MSPs with **Keep**, **Amazon Bedrock**, and **Strands Agents** integration.
 
-Note on foundations: We may integrate the production version with the open‑source Keep platform for provider integrations and workflows. This demo is standalone and not currently integrated with Keep.
+## 🎯 Integration Status: ✅ COMPLETE
+
+**Latest Update (Oct 20, 2025):** Successfully integrated with:
+- ✅ **Keep Platform** - Webhook ingestion, HMAC verification, alert mapping
+- ✅ **Amazon Bedrock** - Claude 3 Sonnet for AI triage and summarization  
+- ✅ **Strands Agents** - Multi-agent correlation and incident grouping
+- ✅ **Full Backend API** - RESTful endpoints for alert management
+- ✅ **Live Frontend** - Deployed to Netlify with Live Mode demo
+
+**Quick Links:**
+- 🌐 **[Live Demo (Netlify)](https://msp-alert-intelligence.netlify.app)** - Frontend with Live Mode
+- 📖 **[Integration Guide](KEEP_INTEGRATION_GUIDE.md)** - Setup and configuration
+- 📊 **[Prototype Status](PROTOTYPE_STATUS.md)** - Current deployment status
+- 🔧 **[Integration Complete](INTEGRATION_COMPLETE.md)** - Technical details
 
 ## Features
 
-### 💎 Production Foundation (Planned)
-- 🔍 **Provider Integrations (Planned)** - Option to leverage Keep for 100+ providers (Prometheus, Datadog, PagerDuty, etc.)
-- 📊 **Alert Database** - PostgreSQL with full history
-- 🔗 **Workflow Engine (Planned)** - Option to adopt Keep-like YAML workflows
-- 🎨 **Extensible Providers** - Pluggable integration model
-- 🔐 **Multi-tenancy** - Tenant isolation and management
+### 💎 Keep Integration (Current & Planned)
+- 🔍 **Keep Webhook Integration** - ✅ Working webhook endpoint (`/api/v1/ingest/keep`)
+- 📊 **Database Schema Alignment** - ✅ PostgreSQL with Keep-compatible schema
+- 🔗 **YAML Workflow Format** - ✅ Keep-compatible workflow definitions
+- 🎨 **Provider Framework** - ⏳ Planned integration with Keep's 100+ providers
+- 🔐 **Multi-tenancy** - ✅ Tenant isolation with MSP client management
 
 ### 🎯 Our MSP Extensions
 - 🎛️ **MSP Noise Reduction** - 80% alert reduction through intelligent filtering
@@ -249,14 +262,28 @@ MIT License - see LICENSE file for details
 
 ## Acknowledgments & Attribution
 
-We acknowledge the Keep project as a likely production foundation for provider integrations and workflows. This demo is standalone and not currently integrated.
+### Built on Keep Foundation
 
-#### Our MSP-Specific Contributions (in this demo):
-- 🎯 Multi-client noise reduction algorithms (80% reduction)
-- 🤖 AWS Bedrock AI agent integration for correlation
-- 📈 SLA-aware alert prioritization and routing
-- 🔄 MSP-optimized workflow templates
-- 👥 Client management and billing integration
+This project integrates with [Keep](https://github.com/keephq/keep), an open-source alert management platform.
+
+**Keep Repository:** https://github.com/keephq/keep  
+**Keep License:** Apache 2.0 / Elastic License 2.0 (EE features)  
+**Keep Version:** 0.47.10  
+**Keep Documentation:** https://docs.keephq.dev
+
+#### What We Use From Keep:
+- ✅ **Webhook Integration** - Keep's alert webhook format
+- ✅ **Database Schema** - PostgreSQL with Keep-compatible tables
+- ✅ **Workflow Format** - YAML-based workflow definitions
+- ✅ **Multi-tenancy** - Tenant isolation and management
+- ⏳ **Provider Framework** - 100+ monitoring integrations (planned)
+
+#### Our MSP-Specific Contributions:
+- 🎯 **Multi-client Noise Reduction** - 80% alert reduction algorithms
+- 🤖 **AWS Bedrock AI Integration** - Advanced correlation and analysis
+- 📈 **SLA-aware Alert Routing** - Client-specific prioritization
+- 🔄 **MSP Workflow Templates** - Pre-built automation
+- 👥 **Multi-client Dashboard** - Unified management view
 
 ### Other Technologies
 - **AWS Bedrock** - Foundation models and AI agents

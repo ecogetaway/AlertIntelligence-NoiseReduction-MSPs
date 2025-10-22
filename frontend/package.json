@@ -4,7 +4,7 @@
   "description": "MSP Alert Intelligence & Noise Reduction Platform Frontend",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -15,10 +15,9 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "next": "^15.3.4",
+    "next": "^14.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@next/font": "^15.3.4",
     "typescript": "^5.7.0",
     "@types/node": "^20.2.1",
     "@types/react": "^18.3.12",
@@ -66,6 +65,7 @@
     "react-loading-skeleton": "^3.3.1",
     "react-markdown": "^10.1.0",
     "react-toastify": "^11.0.5",
+    "react-hot-toast": "^2.4.1",
     
     "zustand": "^5.0.3",
     "framer-motion": "^11.15.0"
