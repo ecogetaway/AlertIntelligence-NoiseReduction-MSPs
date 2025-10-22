@@ -19,6 +19,13 @@ Showcase how your MSP Alert Intelligence platform integrates with Keep's open-so
 - **Real-time Dashboard**: Live alert processing and monitoring
 - **Performance Metrics**: System health and performance tracking
 
+### 3. **Standalone Demo Features** ✅
+- **Interactive Keep Integration Demo**: `keep-integration-demo-standalone.html`
+- **No Backend Required**: Works immediately after Netlify deployment
+- **Simulated Webhook Testing**: Interactive Keep webhook simulation
+- **Visual Feature Demonstrations**: Clear explanations of each Keep feature
+- **Judges Evaluation Guide**: Comprehensive scoring criteria and checklist
+
 ## 🚀 Demo Script (7 minutes)
 
 ### Opening (1 minute)
@@ -142,24 +149,29 @@ curl http://localhost:8000/api/v1/msp/clients
 #### A. Real-time Alert Processing
 **"Our dashboard shows live alert processing:"**
 
-- Open: http://localhost:3000/frontend-demo.html
-- Show: Live alert updates
-- Highlight: Keep integration points
-- Demonstrate: MSP enhancements
+- **Standalone Demo**: `https://your-app-name.netlify.app/` (Keep Integration)
+- **Main Dashboard**: `https://your-app-name.netlify.app/demo`
+- **Static Demo**: `https://your-app-name.netlify.app/frontend-simple.html`
+- Show: Interactive Keep integration features
+- Highlight: MSP-specific enhancements
+- Demonstrate: 80% noise reduction
 
 #### B. Performance Metrics
 **"System performance and health monitoring:"**
 
+**Standalone Demo Features:**
+- ✅ Interactive Keep webhook simulation
+- ✅ HMAC security demonstration
+- ✅ Database schema visualization
+- ✅ YAML workflow examples
+- ✅ Multi-tenancy concepts
+- ✅ Provider framework showcase
+
+**Local Demo (if backend running):**
 ```bash
 # Show performance metrics
 curl http://localhost:8000/api/v1/metrics
 ```
-
-**Demo Points:**
-- ✅ Real-time processing
-- ✅ Performance monitoring
-- ✅ Health checks
-- ✅ System status
 
 ### Closing (1 minute)
 **"This demonstrates how we've enhanced Keep's foundation with MSP-specific AI and noise reduction while maintaining full compatibility."**
@@ -173,12 +185,23 @@ curl http://localhost:8000/api/v1/metrics
 
 ## 🔧 Demo Setup
 
-### Prerequisites
+### Option 1: Standalone Demo (Recommended for Judges)
+**No backend required - works immediately**
+
+1. **Deploy to Netlify**: Connect GitHub repository
+2. **Access Demo**: Visit `https://your-app-name.netlify.app/`
+3. **Keep Integration**: Visit `https://your-app-name.netlify.app/keep`
+4. **Main Dashboard**: Visit `https://your-app-name.netlify.app/demo`
+
+### Option 2: Local Development Demo
+**Full backend + frontend setup**
+
+#### Prerequisites
 - Python 3.8+ (backend)
 - Node.js 16+ (frontend)
 - PostgreSQL (database)
 
-### Step 1: Start Backend
+#### Step 1: Start Backend
 ```bash
 cd backend
 python -m venv venv
@@ -187,14 +210,14 @@ pip install -r requirements.txt
 python main.py
 ```
 
-### Step 2: Start Frontend
+#### Step 2: Start Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### Step 3: Run Demo
+#### Step 3: Run Demo
 ```bash
 # In a new terminal
 ./start-keep-demo.sh
