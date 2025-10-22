@@ -14,7 +14,7 @@
 
 [[redirects]]
   from = "/keep"
-  to = "/keep-integration-demo.html"
+  to = "/keep-integration-demo-standalone.html"
   status = 200
 
 [[headers]]
