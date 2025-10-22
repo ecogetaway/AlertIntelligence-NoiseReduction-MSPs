@@ -1,6 +1,6 @@
-# Keep Integration Demo - Complete Summary
+# Keep Integration Prototype - Complete Summary
 
-## 🎯 Demo Objective
+## 🎯 Prototype Objective
 Showcase how your MSP Alert Intelligence platform integrates with Keep's open-source foundation while highlighting MSP-specific enhancements that deliver 80% noise reduction and AI-powered correlation.
 
 ## 📋 What We've Built
@@ -19,17 +19,17 @@ Showcase how your MSP Alert Intelligence platform integrates with Keep's open-so
 - **Real-time Dashboard**: Live alert processing and monitoring
 - **Performance Metrics**: System health and performance tracking
 
-### 3. **Standalone Demo Features** ✅
-- **Interactive Keep Integration Demo**: `keep-integration-demo-standalone.html`
+### 3. **Standalone Prototype Features** ✅
+- **Interactive Keep Integration Prototype**: `keep-integration-prototype-standalone.html`
 - **No Backend Required**: Works immediately after Netlify deployment
 - **Simulated Webhook Testing**: Interactive Keep webhook simulation
 - **Visual Feature Demonstrations**: Clear explanations of each Keep feature
-- **Judges Evaluation Guide**: Comprehensive scoring criteria and checklist
+- **Evaluation Guide**: Comprehensive scoring criteria and checklist
 
-## 🚀 Demo Script (7 minutes)
+## 🚀 Prototype Script (7 minutes)
 
 ### Opening (1 minute)
-**"Today I'll demonstrate our MSP Alert Intelligence platform, built on Keep's open-source foundation with MSP-specific AI enhancements."**
+**"Today I'll showcase our MSP Alert Intelligence platform, built on Keep's open-source foundation with MSP-specific AI enhancements."**
 
 **Key Points:**
 - Built on Keep's proven alert management foundation
@@ -150,7 +150,7 @@ curl http://localhost:8000/api/v1/msp/clients
 **"Our dashboard shows live alert processing:"**
 
 - **Standalone Demo**: `https://your-app-name.netlify.app/` (Keep Integration)
-- **Main Dashboard**: `https://your-app-name.netlify.app/demo`
+- **Main Dashboard**: `https://your-app-name.netlify.app/prototype`
 - **Static Demo**: `https://your-app-name.netlify.app/frontend-simple.html`
 - Show: Interactive Keep integration features
 - Highlight: MSP-specific enhancements
@@ -161,7 +161,7 @@ curl http://localhost:8000/api/v1/msp/clients
 
 **Standalone Demo Features:**
 - ✅ Interactive Keep webhook simulation
-- ✅ HMAC security demonstration
+- ✅ HMAC security prototypenstration
 - ✅ Database schema visualization
 - ✅ YAML workflow examples
 - ✅ Multi-tenancy concepts
@@ -174,7 +174,7 @@ curl http://localhost:8000/api/v1/metrics
 ```
 
 ### Closing (1 minute)
-**"This demonstrates how we've enhanced Keep's foundation with MSP-specific AI and noise reduction while maintaining full compatibility."**
+**"This prototypenstrates how we've enhanced Keep's foundation with MSP-specific AI and noise reduction while maintaining full compatibility."**
 
 **Key Takeaways:**
 - Built on Keep's proven foundation
@@ -185,13 +185,13 @@ curl http://localhost:8000/api/v1/metrics
 
 ## 🔧 Demo Setup
 
-### Option 1: Standalone Demo (Recommended for Judges)
+### Option 1: Standalone Prototype (Recommended)
 **No backend required - works immediately**
 
 1. **Deploy to Netlify**: Connect GitHub repository
 2. **Access Demo**: Visit `https://your-app-name.netlify.app/`
 3. **Keep Integration**: Visit `https://your-app-name.netlify.app/keep`
-4. **Main Dashboard**: Visit `https://your-app-name.netlify.app/demo`
+4. **Main Dashboard**: Visit `https://your-app-name.netlify.app/prototype`
 
 ### Option 2: Local Development Demo
 **Full backend + frontend setup**
@@ -220,7 +220,7 @@ npm run dev
 #### Step 3: Run Demo
 ```bash
 # In a new terminal
-./start-keep-demo.sh
+./start-keep-prototype.sh
 ```
 
 ## 📊 Demo Metrics
@@ -248,7 +248,7 @@ npm run dev
 ### Business
 - ✅ Clear value proposition
 - ✅ MSP-specific benefits shown
-- ✅ Keep integration demonstrated
+- ✅ Keep integration prototypenstrated
 - ✅ ROI metrics visible
 
 ## 📝 Demo Notes
@@ -273,7 +273,7 @@ npm run dev
 
 ## 🚀 Next Steps
 
-After demo:
+After prototype:
 1. **Q&A Session**: Address technical questions
 2. **Deep Dive**: Show specific integration points
 3. **Customization**: Discuss client-specific needs

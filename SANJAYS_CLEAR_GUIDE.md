@@ -1,10 +1,10 @@
-# Judges Evaluation Guide - Keep Integration Features
+# Keep Integration Features Guide
 
-## 🎯 Clear Explanation for Judges
+## 🎯 Clear Explanation of Keep Integration
 
-This guide clearly explains the Keep integration features that judges will evaluate (30% of the score).
+This guide clearly explains the Keep integration features and their implementation.
 
-## 📋 Keep Integration Features (30% of Score)
+## 📋 Keep Integration Features
 
 ### 1. **Webhook Endpoint** ✅
 **What it is**: Accepts Keep's standard webhook format
@@ -15,7 +15,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - Security: HMAC signature verification
 - Compatibility: Works with all Keep-compatible providers
 
-**Judge can see**:
+**You can see**:
 - Webhook endpoint accepts Keep format
 - Standard JSON structure
 - Security headers present
@@ -30,7 +30,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - Secret: Configurable webhook secret
 - Verification: Automatic signature validation
 
-**Judge can see**:
+**You can see**:
 - Security headers in webhook requests
 - Signature verification working
 - Tamper-proof webhook processing
@@ -45,7 +45,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - Fields: Standard Keep alert fields
 - Extensions: MSP-specific enrichments
 
-**Judge can see**:
+**You can see**:
 - Database schema matches Keep format
 - Alert fields compatible with Keep
 - Multi-tenant data isolation
@@ -60,7 +60,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - Actions: Keep-compatible action definitions
 - Extensions: MSP-specific workflow steps
 
-**Judge can see**:
+**You can see**:
 - YAML workflow format supported
 - Keep syntax compatibility
 - Workflow automation working
@@ -75,7 +75,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - Management: Client-specific configurations
 - Scalability: Support for unlimited tenants
 
-**Judge can see**:
+**You can see**:
 - Client data isolation
 - Tenant-specific configurations
 - Security boundaries enforced
@@ -90,13 +90,13 @@ This guide clearly explains the Keep integration features that judges will evalu
 - Extensibility: Easy to add new providers
 - Compatibility: Works with all Keep providers
 
-**Judge can see**:
+**You can see**:
 - 100+ provider integrations
 - Extensible framework
 - Provider compatibility
 - Easy integration
 
-## 🎯 How Judges Can Evaluate
+## 🎯 How to Evaluate
 
 ### Visual Evidence
 1. **Webhook Endpoint**: Check API documentation and test endpoints
@@ -122,31 +122,31 @@ This guide clearly explains the Keep integration features that judges will evalu
 5. **Scalability**: Multi-tenant architecture
 6. **Extensibility**: Easy provider integration
 
-## 📊 Scoring Criteria
+## 📊 Implementation Quality
 
-### Excellent (25-30 points)
+### Excellent Implementation
 - All 6 features fully implemented and working
 - Clear evidence of Keep integration
 - Professional implementation quality
 - Comprehensive documentation
 
-### Good (20-24 points)
+### Good Implementation
 - 5-6 features implemented
 - Good Keep integration evidence
 - Solid implementation quality
 - Adequate documentation
 
-### Fair (15-19 points)
+### Fair Implementation
 - 4-5 features implemented
 - Some Keep integration evidence
 - Basic implementation quality
 - Minimal documentation
 
-### Poor (0-14 points)
+### Basic Implementation
 - 3 or fewer features implemented
 - Limited Keep integration evidence
-- Poor implementation quality
-- No documentation
+- Basic implementation quality
+- Limited documentation
 
 ## 🎯 Key Differentiators
 
@@ -166,22 +166,22 @@ This guide clearly explains the Keep integration features that judges will evalu
 - **Scalable**: Multi-tenant architecture
 - **Extensible**: Easy to add new providers
 
-## 🚀 Demo Links for Judges
+## 🚀 Prototype Links
 
-### Primary Demo Links
-- **Keep Integration Demo**: `https://your-app-name.netlify.app/` (Landing page)
-- **Main Dashboard**: `https://your-app-name.netlify.app/demo`
+### Primary Prototype Links
+- **Keep Integration Prototype**: `https://your-app-name.netlify.app/` (Landing page)
+- **Main Dashboard**: `https://your-app-name.netlify.app/prototype`
 - **Keep Integration**: `https://your-app-name.netlify.app/keep`
-- **Static Demo**: `https://your-app-name.netlify.app/frontend-simple.html`
+- **Static Prototype**: `https://your-app-name.netlify.app/frontend-simple.html`
 
 ### Documentation Links
-- **Judges Guide**: `https://your-app-name.netlify.app/JUDGES_CLEAR_GUIDE.md`
-- **Deployment Info**: `https://your-app-name.netlify.app/DEPLOYMENT_FOR_JUDGES.md`
+- **Features Guide**: `https://your-app-name.netlify.app/SANJAYS_CLEAR_GUIDE.md`
+- **Deployment Info**: `https://your-app-name.netlify.app/DEPLOYMENT_FOR_SANJAYS.md`
 - **GitHub Repository**: [https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs](https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs)
 
 ## 📝 Evaluation Checklist
 
-### Keep Integration (30% of score)
+### Keep Integration
 - [ ] Webhook endpoint accepts Keep format
 - [ ] HMAC signature verification working
 - [ ] Database schema compatible with Keep
@@ -189,7 +189,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - [ ] Multi-tenant data isolation
 - [ ] Provider framework extensible
 
-### MSP Enhancements (40% of score)
+### MSP Enhancements
 - [ ] 80% noise reduction demonstrated
 - [ ] AI correlation with Bedrock working
 - [ ] SLA management configured
@@ -197,7 +197,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - [ ] Real-time dashboard updates
 - [ ] Performance metrics visible
 
-### Technical Quality (20% of score)
+### Technical Quality
 - [ ] Code quality and structure
 - [ ] Error handling and logging
 - [ ] Security best practices
@@ -205,7 +205,7 @@ This guide clearly explains the Keep integration features that judges will evalu
 - [ ] Frontend responsiveness
 - [ ] Database optimization
 
-### Innovation & Impact (10% of score)
+### Innovation & Impact
 - [ ] Clear value proposition
 - [ ] MSP-specific benefits
 - [ ] Scalability demonstrated

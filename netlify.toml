@@ -8,7 +8,7 @@
   status = 200
 
 [[redirects]]
-  from = "/demo"
+  from = "/prototype"
   to = "/frontend-demo.html"
   status = 200
 
