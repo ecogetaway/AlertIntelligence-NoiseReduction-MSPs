@@ -18,7 +18,7 @@
 **"Built on Keep's open-source foundation with 100+ provider integrations, enhanced with AWS Bedrock AI."**
 
 **Demo Actions:**
-1. **Navigate to**: `https://msp-alert-intelligence.netlify.app/`
+1. **Navigate to**: `https://mspalerts.netlify.app/`
 2. **Point to AWS badges**: "AWS Bedrock, Strands Agents integration"
 3. **Show "AWS Technologies Integration" section**
 4. **Click "Test Integration"** → Opens AWS modal with Claude triage
@@ -28,7 +28,7 @@
 **"Our dashboard shows real-time alert processing with advanced AI correlation."**
 
 **Demo Actions:**
-1. **Navigate to**: `https://msp-alert-intelligence.netlify.app/prototype`
+1. **Navigate to**: `https://mspalerts.netlify.app/prototype`
 2. **Toggle Live Mode ON** → "Notice the pulsing Live badge"
 3. **Show Analytics**: "75-92% noise reduction, 60-80% deduplication"
 4. **Demonstrate Live Simulator**: "Real-time alert injection with controls"
@@ -58,8 +58,8 @@
 ## 🎬 Demo Flow Summary
 
 ### URLs to Use:
-- **Keep + AWS Integration**: `https://msp-alert-intelligence.netlify.app/`
-- **Dashboard**: `https://msp-alert-intelligence.netlify.app/prototype`
+- **Keep + AWS Integration**: `https://mspalerts.netlify.app/`
+- **Dashboard**: `https://mspalerts.netlify.app/prototype`
 
 ### Key Features to Highlight:
 1. **AWS Integration**: Bedrock badges, Claude triage modal, Strands orchestration

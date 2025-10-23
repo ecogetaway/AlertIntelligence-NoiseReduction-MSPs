@@ -17,8 +17,8 @@ Purpose: A comprehensive 5–7 minute flow showcasing the zero‑backend, "looks
 
 ### For Judges
 Use Netlify URLs for the most stable experience:
-- **Keep Integration**: https://msp-alert-intelligence.netlify.app/ (AWS badges, webhook testing)
-- **Dashboard**: https://msp-alert-intelligence.netlify.app/prototype (Live Mode, advanced UI)
+- **Keep Integration**: https://mspalerts.netlify.app/ (AWS badges, webhook testing)
+- **Dashboard**: https://mspalerts.netlify.app/prototype (Live Mode, advanced UI)
 
 ## 🆕 NEW FEATURES (Enhanced v2.0)
 
