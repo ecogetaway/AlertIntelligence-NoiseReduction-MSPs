@@ -22,7 +22,7 @@ The server will start on `http://localhost:3000` and serve all demo files.
 | **Demo Hub** | http://localhost:3000/index.html | Main navigation hub with all demo links |
 | **Keep Integration** | http://localhost:3000/keep-integration-demo.html | Primary Keep integration showcase |
 | **Main Dashboard** | http://localhost:3000/frontend-demo.html | Full-featured React dashboard |
-| **Static Demo** | http://localhost:3000/frontend-simple.html | Simple static HTML demo |
+<!-- Static demo removed -->
 
 ### Alternative Ports
 If port 3000 is busy, you can use any other port:
@@ -55,7 +55,7 @@ python3 -m http.server 8080
 - ✅ Export functionality (CSV/JSON)
 - ✅ Alert grouping and correlation
 
-### Static Demo (`/frontend-simple.html`)
+<!-- Static demo removed -->
 **Simple static HTML demo**
 - ✅ Basic alert display
 - ✅ Static data visualization
@@ -83,7 +83,7 @@ msp-alert-app/
 ├── index.html                    # Demo hub (navigation)
 ├── keep-integration-demo.html    # Keep integration showcase
 ├── frontend-demo.html            # Main React dashboard
-├── frontend-simple.html          # Static HTML demo
+<!-- Static demo removed -->
 ├── start-keep-demo.sh           # Demo startup script
 ├── KEEP_DEMO_LOCALHOST_GUIDE.md # Detailed guide
 └── LOCALHOST_DEMO_LINKS.md      # This file
@@ -106,7 +106,7 @@ msp-alert-app/
 5. **Analytics**: Switch to Analytics tab to view metrics
 
 ### Scenario 3: Static Demo
-1. **Start**: Open http://localhost:3000/frontend-simple.html
+<!-- Static demo removed -->
 2. **View**: Basic alert display with static data
 3. **Interact**: Test simple checkbox interactions
 4. **Compare**: See the difference from the full dashboard

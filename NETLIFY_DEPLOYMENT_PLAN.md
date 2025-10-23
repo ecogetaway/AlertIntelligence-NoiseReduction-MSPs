@@ -138,7 +138,7 @@ const trackDemo = (action) => {
 ### 1. Multiple Demo Versions
 - **Static HTML**: `frontend-demo.html` (primary)
 - **Next.js App**: Full application (secondary)
-- **Simple Demo**: `frontend-simple.html` (fallback)
+<!-- Static demo removed -->
 
 ### 2. Rollback Plan
 If Netlify deployment fails:

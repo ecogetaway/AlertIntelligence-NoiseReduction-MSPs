@@ -9,7 +9,7 @@ This guide provides everything judges need to evaluate our MSP Alert Intelligenc
 ### Primary Demo Links
 - **Main Dashboard**: [https://your-netlify-app.netlify.app/frontend-demo.html](https://your-netlify-app.netlify.app/frontend-demo.html)
 - **Keep Integration Demo**: [https://your-netlify-app.netlify.app/keep-integration-demo.html](https://your-netlify-app.netlify.app/keep-integration-demo.html)
-- **Static Demo**: [https://your-netlify-app.netlify.app/frontend-simple.html](https://your-netlify-app.netlify.app/frontend-simple.html)
+<!-- Static demo removed -->
 
 ## 🚀 What to Evaluate
 

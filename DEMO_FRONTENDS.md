@@ -37,7 +37,7 @@ python3 -m http.server 3000
 **Use Case:** Future development, production deployment
 **Why Not Demo:** Light theme, incomplete integration
 
-### 2. Simple Frontend (`frontend-simple.html`)
+<!-- Static demo removed -->
 **Status:** Basic version
 **Use Case:** Testing only
 
@@ -80,7 +80,7 @@ open -a "Google Chrome" /Users/sanjay/msp-alert-app/frontend-demo.html
 
 **DO NOT USE:**
 - ❌ http://localhost:3000 (Next.js - light theme)
-- ❌ `frontend-simple.html`
+<!-- Static demo removed -->
 
 **ALWAYS USE:**
 - ✅ `frontend-demo.html` opened in Chrome

@@ -23,10 +23,7 @@ if [ ! -f "frontend-demo.html" ]; then
     exit 1
 fi
 
-if [ ! -f "frontend-simple.html" ]; then
-    echo "❌ frontend-simple.html not found. Please make sure you're in the project directory."
-    exit 1
-fi
+## static demo removed
 
 echo "✅ All demo files found"
 echo ""
@@ -41,7 +38,7 @@ echo ""
 echo "📍 Demo Links Available:"
 echo "🔗 Keep Integration Demo: http://localhost:3000/keep-integration-demo.html"
 echo "🔗 Main Dashboard: http://localhost:3000/frontend-demo.html"
-echo "🔗 Static Demo: http://localhost:3000/frontend-simple.html"
+# static demo removed
 echo "🔗 Landing Page: http://localhost:3000/index.html"
 echo ""
 echo "🎯 What you can do in the Keep Integration Demo:"

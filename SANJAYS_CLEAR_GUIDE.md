@@ -172,7 +172,7 @@ This guide clearly explains the Keep integration features and their implementati
 - **Keep Integration Prototype**: `https://your-app-name.netlify.app/` (Landing page)
 - **Main Dashboard**: `https://your-app-name.netlify.app/prototype`
 - **Keep Integration**: `https://your-app-name.netlify.app/keep`
-- **Static Prototype**: `https://your-app-name.netlify.app/frontend-simple.html`
+
 
 ### Documentation Links
 - **Features Guide**: `https://your-app-name.netlify.app/SANJAYS_CLEAR_GUIDE.md`

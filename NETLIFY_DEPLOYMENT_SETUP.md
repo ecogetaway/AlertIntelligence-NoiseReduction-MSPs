@@ -72,7 +72,7 @@ Once deployed, your judges will have access to:
 - **Keep Integration Demo**: `https://your-app-name.netlify.app/` (Landing page)
 - **Main Dashboard**: `https://your-app-name.netlify.app/demo`
 - **Keep Integration**: `https://your-app-name.netlify.app/keep`
-- **Static Demo**: `https://your-app-name.netlify.app/frontend-simple.html`
+<!-- Static demo removed -->
 
 ### Additional Links
 - **GitHub Repository**: [https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs](https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs)
@@ -178,7 +178,7 @@ Once deployed, your judges will have access to:
 - [ ] Landing page: `https://your-app.netlify.app/`
 - [ ] Main dashboard: `https://your-app.netlify.app/demo`
 - [ ] Keep integration: `https://your-app.netlify.app/keep`
-- [ ] Static demo: `https://your-app.netlify.app/frontend-simple.html`
+<!-- Static demo removed -->
 
 ## 📞 Support Information
 

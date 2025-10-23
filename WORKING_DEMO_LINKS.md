@@ -30,7 +30,7 @@ The Keep integration test failure has been fixed! The demo now works in both mod
 - Advanced filtering and analytics
 
 ### ⚡ **Static Demo**
-**http://localhost:3000/frontend-simple.html**
+<!-- Static demo removed -->
 - Lightweight HTML demo
 - Fast loading
 - Basic functionality showcase
@@ -112,6 +112,6 @@ All your demo links are now working perfectly:
 | **🎯 Demo Hub** | http://localhost:3000/index.html | ✅ Working |
 | **🔧 Keep Integration** | http://localhost:3000/keep-integration-demo.html | ✅ **FIXED!** |
 | **📊 Main Dashboard** | http://localhost:3000/frontend-demo.html | ✅ Working |
-| **⚡ Static Demo** | http://localhost:3000/frontend-simple.html | ✅ Working |
+<!-- Static demo removed -->
 
 The Keep integration demo is now ready for your presentation! The "X Failed" issue has been completely resolved, and you can demonstrate all the Keep integration benefits and MSP enhancements.

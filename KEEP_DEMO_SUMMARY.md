@@ -151,7 +151,7 @@ curl http://localhost:8000/api/v1/msp/clients
 
 - **Standalone Demo**: `https://your-app-name.netlify.app/` (Keep Integration)
 - **Main Dashboard**: `https://your-app-name.netlify.app/prototype`
-- **Static Demo**: `https://your-app-name.netlify.app/frontend-simple.html`
+
 - Show: Interactive Keep integration features
 - Highlight: MSP-specific enhancements
 - Demonstrate: 80% noise reduction

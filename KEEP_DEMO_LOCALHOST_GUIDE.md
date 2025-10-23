@@ -18,7 +18,7 @@ The server will start on `http://localhost:3000` and serve all demo files.
 ### Primary Demo Links
 - **Keep Integration Demo**: http://localhost:3000/keep-integration-demo.html
 - **Main Dashboard**: http://localhost:3000/frontend-demo.html  
-- **Static Demo**: http://localhost:3000/frontend-simple.html
+<!-- Static demo removed -->
 - **Landing Page**: http://localhost:3000/index.html
 
 ### Alternative Access Methods
@@ -52,7 +52,7 @@ python3 -m http.server 8080
 - ✅ Analytics dashboard
 - ✅ AI agent status
 
-### 3. Static Demo (`/frontend-simple.html`)
+<!-- Static demo removed -->
 **Simple static HTML demo**
 - ✅ Basic alert display
 - ✅ Static data visualization
@@ -76,7 +76,7 @@ python3 -m http.server 8080
 msp-alert-app/
 ├── keep-integration-demo.html    # Keep integration showcase
 ├── frontend-demo.html            # Main React dashboard
-├── frontend-simple.html          # Static HTML demo
+<!-- Static demo removed -->
 ├── index.html                    # Landing page
 ├── start-keep-demo.sh           # Demo startup script
 └── KEEP_DEMO_LOCALHOST_GUIDE.md  # This guide
@@ -97,7 +97,7 @@ msp-alert-app/
 4. Explore analytics tab
 
 ### Scenario 3: Static Demo
-1. Open http://localhost:3000/frontend-simple.html
+<!-- Static demo removed -->
 2. View basic alert display
 3. Test simple interactions
 

@@ -19,21 +19,13 @@ test.describe('Smoke Tests', () => {
     await expect(body).toBeVisible();
   });
 
-  test('should serve static demo page', async ({ page }) => {
-    await page.goto('/frontend-simple.html');
-    
-    // Check that page loads
-    await expect(page).toHaveTitle(/MSP Alert Intelligence/);
-    
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
-  });
+  // static demo removed
 
-  test('should serve keep integration demo', async ({ page }) => {
-    await page.goto('/keep-integration-demo.html');
+  test('should serve keep integration prototype', async ({ page }) => {
+    await page.goto('/keep-integration-demo-standalone.html');
     
     // Check that page loads
-    await expect(page).toHaveTitle(/Keep Integration/);
+    await expect(page).toHaveTitle(/Keep Integration Prototype/);
     
     const body = page.locator('body');
     await expect(body).toBeVisible();

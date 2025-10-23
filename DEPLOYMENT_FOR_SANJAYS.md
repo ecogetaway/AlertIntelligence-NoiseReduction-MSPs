@@ -10,7 +10,7 @@ Since judges will be evaluating through links rather than live demos, I've creat
 - **Keep Integration Demo**: `https://your-netlify-app.netlify.app/` (Landing page)
 - **Main Dashboard**: `https://your-netlify-app.netlify.app/demo`
 - **Keep Integration**: `https://your-netlify-app.netlify.app/keep`
-- **Static Demo**: `https://your-netlify-app.netlify.app/frontend-simple.html`
+<!-- Static demo removed -->
 
 ## 🚀 What Judges Will See
 
@@ -92,7 +92,7 @@ Keep Platform → Webhook → MSP Processing → AI Enhancement → Dashboard
 /
 ├── keep-integration-demo.html    # Landing page for judges
 ├── frontend-demo.html           # Main dashboard
-├── frontend-simple.html         # Static demo
+<!-- Static demo removed -->
 ├── netlify.toml                 # Deployment config
 └── JUDGES_DEMO_GUIDE.md         # Judges evaluation guide
 ```
