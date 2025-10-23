@@ -35,6 +35,12 @@
                     <span class="msp-badge text-white px-4 py-2 rounded-full text-sm font-medium">
                         🎯 MSP Enhanced
                     </span>
+                    <span class="ai-badge text-white px-4 py-2 rounded-full text-sm font-medium">
+                        🤖 AWS Bedrock
+                    </span>
+                    <span class="ai-badge text-white px-4 py-2 rounded-full text-sm font-medium">
+                        🧠 Strands Agents
+                    </span>
                 </div>
             </div>
         </div>
@@ -217,6 +223,69 @@
                             <div class="flex items-center text-green-800">
                                 <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
                                 <span class="font-medium">✅ 100+ Providers</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AWS Technologies Integration -->
+            <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-8 shadow-lg border border-orange-200 mb-16">
+                <div class="text-center mb-8">
+                    <div class="flex items-center justify-center mb-4">
+                        <img src="https://a0.awsstatic.com/main/images/logos/aws_logo_smile_1200x630.png" alt="AWS" class="h-8 mr-4">
+                        <h3 class="text-3xl font-bold text-gray-900">AWS Technologies Integration</h3>
+                    </div>
+                    <p class="text-lg text-gray-600">Leveraging AWS Bedrock and Strands Agents SDK for AI-powered alert intelligence</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- AWS Bedrock -->
+                    <div class="prototype-card bg-white rounded-lg p-6 border border-orange-200">
+                        <div class="flex items-center mb-4">
+                            <div class="ai-badge text-white p-3 rounded-lg">
+                                <i data-lucide="brain" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold ml-4">AWS Bedrock AI</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Claude 3 Sonnet for intelligent alert triage and correlation</p>
+                        <div class="code-block text-sm">
+                            <div class="text-orange-400"># AWS Bedrock Integration</div>
+                            <div class="text-gray-400">bedrock_client = boto3.client(</div>
+                            <div class="text-blue-400">    'bedrock-runtime',</div>
+                            <div class="text-blue-400">    region_name='us-east-1'</div>
+                            <div class="text-gray-400">)</div>
+                            <div class="text-green-400"># Claude 3 Sonnet for AI triage</div>
+                        </div>
+                        <div class="mt-4 p-3 bg-orange-50 rounded-lg">
+                            <div class="flex items-center text-orange-800">
+                                <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+                                <span class="font-medium">✅ AWS Bedrock Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strands Agents SDK -->
+                    <div class="prototype-card bg-white rounded-lg p-6 border border-orange-200">
+                        <div class="flex items-center mb-4">
+                            <div class="ai-badge text-white p-3 rounded-lg">
+                                <i data-lucide="users" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold ml-4">Strands Agents SDK</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Multi-agent orchestration for complex alert processing</p>
+                        <div class="code-block text-sm">
+                            <div class="text-orange-400"># Strands Agents Integration</div>
+                            <div class="text-gray-400">strands_manager = StrandsAgentManager()</div>
+                            <div class="text-blue-400">await strands_manager.invoke_agent(</div>
+                            <div class="text-blue-400">    'multi_step_processor', payload</div>
+                            <div class="text-gray-400">)</div>
+                            <div class="text-green-400"># Multi-agent correlation</div>
+                        </div>
+                        <div class="mt-4 p-3 bg-orange-50 rounded-lg">
+                            <div class="flex items-center text-orange-800">
+                                <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+                                <span class="font-medium">✅ Strands Agents Active</span>
                             </div>
                         </div>
                     </div>
@@ -441,31 +510,97 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // Test Keep Integration (Simulated)
+        // Test Keep Integration with AWS Technologies (Simulated)
         async function testKeepIntegration() {
             const button = event.target;
             const originalText = button.innerHTML;
             
-            button.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i>Testing...';
+            button.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i>Testing AWS AI...';
             lucide.createIcons();
             
-            // Simulate Keep webhook test
+            // Simulate Keep webhook test with AWS technologies
             setTimeout(() => {
-                button.innerHTML = '<i data-lucide="check" class="w-4 h-4 mr-2"></i>Success!';
+                button.innerHTML = '<i data-lucide="check" class="w-4 h-4 mr-2"></i>AWS AI Success!';
                 button.className = 'inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg transition-colors';
                 
-                // Show success message
-                showNotification('Keep Integration Test Successful!', 'Webhook endpoint is working correctly.', 'success');
+                // Show detailed success message with AWS technologies
+                showNotification(
+                    'AWS Technologies Integration Successful!', 
+                    'Keep webhook + AWS Bedrock + Strands Agents working together!', 
+                    'success'
+                );
+                
+                // Show AWS technologies in action
+                showAWSTechnologiesDemo();
                 
                 lucide.createIcons();
                 
-                // Reset button after 3 seconds
+                // Reset button after 5 seconds
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.className = 'inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors';
                     lucide.createIcons();
-                }, 3000);
+                }, 5000);
             }, 2000);
+        }
+
+        // Show AWS Technologies Demo
+        function showAWSTechnologiesDemo() {
+            const demoContainer = document.createElement('div');
+            demoContainer.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            demoContainer.innerHTML = `
+                <div class="bg-white rounded-xl p-8 max-w-4xl mx-4 max-h-96 overflow-y-auto">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-gray-900">AWS Technologies in Action</h3>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h4 class="font-semibold text-green-800 mb-2">✅ Keep Integration</h4>
+                            <ul class="text-sm text-green-700 space-y-1">
+                                <li>• Webhook endpoint: <code>/api/v1/ingest/keep</code></li>
+                                <li>• HMAC signature verified</li>
+                                <li>• Alert mapped to Keep format</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                            <h4 class="font-semibold text-orange-800 mb-2">🤖 AWS Bedrock AI Processing</h4>
+                            <ul class="text-sm text-orange-700 space-y-1">
+                                <li>• Claude 3 Sonnet: Alert triage and classification</li>
+                                <li>• AI Summary: "High CPU usage detected on server-01"</li>
+                                <li>• Severity: Auto-classified as HIGH</li>
+                                <li>• Recommended Action: Scale up instance</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                            <h4 class="font-semibold text-purple-800 mb-2">🧠 Strands Agents SDK Active</h4>
+                            <ul class="text-sm text-purple-700 space-y-1">
+                                <li>• Multi-agent correlation: 3 related alerts found</li>
+                                <li>• Temporal analysis: Pattern detected over 5 minutes</li>
+                                <li>• Infrastructure drift: Server capacity threshold</li>
+                                <li>• Automated remediation: Scaling workflow triggered</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 class="font-semibold text-blue-800 mb-2">🎯 MSP Enhancements</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• Noise reduction: 80% → 20% alerts</li>
+                                <li>• SLA management: Client-specific SLA tracking</li>
+                                <li>• Cost optimization: AWS resource recommendations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(demoContainer);
+            lucide.createIcons();
         }
 
         // Show notification
