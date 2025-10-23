@@ -1,0 +1,58 @@
+%% MSP Alert Intelligence – End-to-End Data Flow (Mermaid)
+%% Shows Prototype (Live Mode) and Production paths
+
+flowchart TB
+  %% Sources
+  subgraph SOURCES[Monitoring Sources]
+    PROM[Prometheus]
+    DD[Datadog]
+    PD[PagerDuty]
+  end
+
+  %% Keep layer
+  KEEP[Keep Platform\nWebhook + YAML workflows\n(HMAC shared secret)]
+  PROM --> KEEP
+  DD --> KEEP
+  PD --> KEEP
+
+  %% Ingest
+  ING[FastAPI Ingest /api/v1/ingest/keep\nValidate + HMAC verify]
+  KEEP -->|JSON webhook| ING
+
+  %% Processing
+  MAP[Normalize/Map to MSP schema]
+  DEDUP[Deduplicate + Rate-limit]
+  FILTER[Intelligent Filtering\n(noise suppression)]
+  CORR[AI Correlation & Triage\n(Bedrock + Strands)]
+  DB[(PostgreSQL)]
+  CACHE[(Redis)]
+
+  ING --> MAP --> DEDUP --> FILTER --> CORR --> DB
+  CORR --> CACHE
+
+  %% AI services
+  BEDROCK[AWS Bedrock\nClaude 3 Sonnet]
+  STRANDS[Strands Agents]
+  CORR --> BEDROCK
+  CORR --> STRANDS
+
+  %% Delivery to UI
+  API[Read APIs: incidents, alerts, metrics]
+  DB --> API
+  CACHE --> API
+  UI[Next.js Dashboard\n(frontend-demo.html, prototype)]
+  API --> UI
+
+  %% Prototype path (Live Mode)
+  subgraph PROTO[Prototype – Live Mode]
+    SIM[In-browser alert simulator]
+    UI2[Dashboard (Netlify)]
+    METRICS[Client-side metrics\n(noise %, dedup %, groups)]
+  end
+  SIM --> UI2 --> METRICS
+
+  %% Notes
+  noteP["Prototype: No backend required; simulator feeds UI.\nProduction: Keep → FastAPI → Postgres → UI with AI services."]
+  UI2 --- noteP
+
+

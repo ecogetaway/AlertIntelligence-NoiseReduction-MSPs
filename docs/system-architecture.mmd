@@ -1,0 +1,67 @@
+%% MSP Alert Intelligence – High-level System Architecture (Mermaid)
+%% Paste this block directly into tools that support Mermaid, or export to SVG/PNG.
+
+flowchart LR
+  %% Client and Hosting
+  subgraph CLIENT[Client]
+    J[Judges / Users]
+    UI[Next.js Dashboard\n(frontend-demo.html, prototype)]
+  end
+
+  subgraph HOSTING[Hosting]
+    NETLIFY[Netlify Static Hosting\n(mspalerts.netlify.app)]
+  end
+
+  J -- Browser --> NETLIFY --> UI
+
+  %% Production backend path (optional in Live Mode)
+  subgraph BACKEND[Backend Path (Production)]
+    ING[FastAPI Ingest API\n /api/v1/ingest/keep\n+ HMAC verify]
+    MAP[Alert Mapping & Validation]
+    FILT[Filtering & Deduplication]
+    CORR[AI Correlation & Triage]
+    DB[(PostgreSQL)]
+    CACHE[(Redis)]
+  end
+
+  UI <--> |REST / WS (future)| ING
+  ING --> MAP --> FILT --> CORR --> DB
+  CORR --> CACHE
+  ING --> DB
+
+  %% AI Services
+  subgraph AI[A I Services]
+    BEDROCK[AWS Bedrock\n(Claude 3 Sonnet)]
+    STRANDS[Strands Agents\n(Orchestration)]
+  end
+  CORR --> BEDROCK
+  CORR --> STRANDS
+
+  %% External Integrations via Keep
+  subgraph EXT[External Integrations]
+    KEEP[Keep Platform\n(Webhooks, YAML workflows)]
+    PROM[Prometheus]
+    DD[Datadog]
+    PD[PagerDuty]
+    SLACK[Slack]
+  end
+
+  PROM --> KEEP
+  DD --> KEEP
+  PD --> KEEP
+  KEEP --> |HMAC webhook| ING
+  ING --> |Notifications| SLACK
+
+  %% Dev, Tests & CI
+  subgraph DEV[Development & CI]
+    GH[GitHub Repo]
+    PW[Playwright E2E]
+  end
+  GH --> NETLIFY
+  PW --> UI
+
+  %% Notes
+  noteN["Live Mode demo is frontend-only on Netlify;\nProduction path uses FastAPI + Postgres + AI services."]
+  UI --- noteN
+
+
