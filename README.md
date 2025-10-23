@@ -1,21 +1,33 @@
 # MSP Alert Intelligence & Noise Reduction Platform
 
-[![Built on Keep](https://img.shields.io/badge/Built%20on-Keep-blue?logo=github)](https://github.com/keephq/keep)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock-orange?logo=amazon-aws)](https://aws.amazon.com/bedrock/)
 
-🚀 **Built on [Keep](https://github.com/keephq/keep)** - The open-source alert management platform
+🚀 Enhanced prototype showcasing AI-powered alert intelligence for MSPs with **Keep**, **Amazon Bedrock**, and **Strands Agents** integration.
 
-A hackathon prototype extending Keep's powerful alert management capabilities with MSP-specific features including multi-tenant noise reduction, AWS Bedrock AI analysis, and client SLA management.
+## 🎯 Integration Status: ✅ COMPLETE
+
+**Latest Update (Oct 20, 2025):** Successfully integrated with:
+- ✅ **Keep Platform** - Webhook ingestion, HMAC verification, alert mapping
+- ✅ **Amazon Bedrock** - Claude 3 Sonnet for AI triage and summarization  
+- ✅ **Strands Agents** - Multi-agent correlation and incident grouping
+- ✅ **Full Backend API** - RESTful endpoints for alert management
+- ✅ **Live Frontend** - Deployed to Netlify with Live Mode demo
+
+**Quick Links:**
+- 🌐 **[Live Demo (Netlify)](https://msp-alert-intelligence.netlify.app)** - Frontend with Live Mode
+- 📖 **[Integration Guide](KEEP_INTEGRATION_GUIDE.md)** - Setup and configuration
+- 📊 **[Prototype Status](PROTOTYPE_STATUS.md)** - Current deployment status
+- 🔧 **[Integration Complete](INTEGRATION_COMPLETE.md)** - Technical details
 
 ## Features
 
-### 💎 From Keep (Open Source Foundation)
-- 🔍 **Alert Ingestion** - Receive alerts from 100+ providers (Prometheus, Datadog, PagerDuty, etc.)
-- 📊 **Alert Database** - PostgreSQL-based alert storage with full history
-- 🔗 **Workflow Engine** - YAML-based workflow automation
-- 🎨 **Provider Framework** - Extensible provider integration system
-- 🔐 **Multi-tenancy** - Built-in tenant isolation and management
+### 💎 Keep Integration (Current & Planned)
+- 🔍 **Keep Webhook Integration** - ✅ Working webhook endpoint (`/api/v1/ingest/keep`)
+- 📊 **Database Schema Alignment** - ✅ PostgreSQL with Keep-compatible schema
+- 🔗 **YAML Workflow Format** - ✅ Keep-compatible workflow definitions
+- 🎨 **Provider Framework** - ⏳ Planned integration with Keep's 100+ providers
+- 🔐 **Multi-tenancy** - ✅ Tenant isolation with MSP client management
 
 ### 🎯 Our MSP Extensions
 - 🎛️ **MSP Noise Reduction** - 80% alert reduction through intelligent filtering
@@ -26,8 +38,8 @@ A hackathon prototype extending Keep's powerful alert management capabilities wi
 
 ## Architecture
 
-### Built on Keep's Foundation
-This platform extends [Keep's architecture](https://github.com/keephq/keep) with MSP-specific components:
+### Architecture Overview
+This platform provides MSP-specific components and can optionally integrate with Keep in production:
 
 ```
 ┌─────────────────────────────────────────┐
@@ -39,17 +51,17 @@ This platform extends [Keep's architecture](https://github.com/keephq/keep) with
 │  ├── SLA Management                    │
 │  └── MSP-specific Workflows            │
 ├─────────────────────────────────────────┤
-│  💎 Keep Core (Open Source)            │
-│  ├── Alert Management                  │
-│  ├── Workflow Engine                   │
-│  ├── Provider Integrations             │
+│  💎 Foundation (Planned Integration)   │
+│  ├── Alert Management (Keep optional)  │
+│  ├── Workflow Engine (Keep optional)   │
+│  ├── Provider Integrations (Keep opt.) │
 │  └── Database Models                   │
 └─────────────────────────────────────────┘
 ```
 
 ### Backend
-- **Keep's FastAPI Framework** - Extended with MSP routes
-- **Keep's Alert Models** - With MSP enrichments
+- **FastAPI** - MSP routes and services
+- **Alert Models** - With MSP enrichments
 - **AWS Bedrock AgentCore** - Dynamic agent orchestration
 - **Strands Agents** - Autonomous AI agents for processing
 - **PostgreSQL** - Alert and incident storage
@@ -176,9 +188,9 @@ msp-alert-app/
 - **Decision Agent** - Makes routing and escalation decisions
 - **Summary Agent** - Creates incident summaries
 
-## Workflows
+## Workflows (Optional)
 
-The platform uses YAML-based workflows similar to Keep, extended with AI agent triggers:
+The platform supports YAML-based workflows and can align with Keep workflows in production. Example:
 
 ```yaml
 workflow:
@@ -250,8 +262,9 @@ MIT License - see LICENSE file for details
 
 ## Acknowledgments & Attribution
 
-### Built on Keep
-This project is built on [Keep](https://github.com/keephq/keep), an open-source alert management platform.
+### Built on Keep Foundation
+
+This project integrates with [Keep](https://github.com/keephq/keep), an open-source alert management platform.
 
 **Keep Repository:** https://github.com/keephq/keep  
 **Keep License:** Apache 2.0 / Elastic License 2.0 (EE features)  
@@ -259,18 +272,18 @@ This project is built on [Keep](https://github.com/keephq/keep), an open-source 
 **Keep Documentation:** https://docs.keephq.dev
 
 #### What We Use From Keep:
-- ✅ Alert data models and database schema
-- ✅ Workflow YAML format and execution engine  
-- ✅ Provider integration framework (100+ providers)
-- ✅ API route structure and patterns
-- ✅ Multi-tenancy and authentication system
+- ✅ **Webhook Integration** - Keep's alert webhook format
+- ✅ **Database Schema** - PostgreSQL with Keep-compatible tables
+- ✅ **Workflow Format** - YAML-based workflow definitions
+- ✅ **Multi-tenancy** - Tenant isolation and management
+- ⏳ **Provider Framework** - 100+ monitoring integrations (planned)
 
 #### Our MSP-Specific Contributions:
-- 🎯 Multi-client noise reduction algorithms (80% reduction)
-- 🤖 AWS Bedrock AI agent integration for correlation
-- 📈 SLA-aware alert prioritization and routing
-- 🔄 MSP-optimized workflow templates
-- 👥 Client management and billing integration
+- 🎯 **Multi-client Noise Reduction** - 80% alert reduction algorithms
+- 🤖 **AWS Bedrock AI Integration** - Advanced correlation and analysis
+- 📈 **SLA-aware Alert Routing** - Client-specific prioritization
+- 🔄 **MSP Workflow Templates** - Pre-built automation
+- 👥 **Multi-client Dashboard** - Unified management view
 
 ### Other Technologies
 - **AWS Bedrock** - Foundation models and AI agents
@@ -282,20 +295,32 @@ This project is built on [Keep](https://github.com/keephq/keep), an open-source 
 
 ## License
 
-This project extends Keep (Apache 2.0) with MSP-specific features.
+**MSP Demo:** MIT License
 
-**Our MSP Extensions:** MIT License  
-**Keep Core:** Apache 2.0 / Elastic License 2.0
-
-See [ATTRIBUTION.md](ATTRIBUTION.md) for detailed license information.
+See [ATTRIBUTION.md](ATTRIBUTION.md) for third‑party license information and planned production integrations.
 
 ---
 
+## 🚀 Live Demo
+
+Experience the MSP Alert Intelligence platform live:
+
+- **Vercel Deployment**: https://msp-alert-app.vercel.app
+- **Netlify Deployment**: https://msp-alert-intelligence.netlify.app
+
+**Features:**
+- ✅ Zero backend - runs entirely in browser
+- ✅ Live mode simulation with realistic data
+- ✅ 8-second update cadence
+- ✅ Interactive filters and bulk operations
+- ✅ Analytics and incident correlation
+
 ## Links
 
-- **Live Demo:** `http://localhost:3000/frontend-demo.html` - Local development
+- **Live Demo:** https://msp-alert-app.vercel.app (Vercel) or https://msp-alert-intelligence.netlify.app (Netlify)
+- **Local Development:** `http://localhost:3000/frontend-demo.html`
 - **GitHub Repository:** `https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs`
-- **Demo Script:** [HACKATHON_DEMO_SCRIPT.md](./HACKATHON_DEMO_SCRIPT.md) - 3-4 minute demo guide
+- **Demo Script:** [DEMO_SCRIPT_LIVE_MODE.md](./DEMO_SCRIPT_LIVE_MODE.md) - 3-4 minute demo guide
 - **Setup Guide:** [DEMO_SETUP_GUIDE.md](./DEMO_SETUP_GUIDE.md) - Quick start instructions
-- **Keep Project:** https://github.com/keephq/keep
+- **Keep Project (for production consideration):** https://github.com/keephq/keep
 - **Keep Documentation:** https://docs.keephq.dev

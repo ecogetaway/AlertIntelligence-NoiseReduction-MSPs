@@ -34,7 +34,7 @@ class FrontendBenchmarks:
         pages = [
             ("/", "Home/Dashboard"),
             ("/frontend-demo.html", "Demo Dashboard"),
-            ("/frontend-simple.html", "Simple Demo")
+            ("/keep-integration-demo-standalone.html", "Keep + AWS Prototype")
         ]
         
         page_results = {}
@@ -120,7 +120,7 @@ class FrontendBenchmarks:
                 # Analyze static HTML files
                 static_files = [
                     "frontend-demo.html",
-                    "frontend-simple.html"
+                    "keep-integration-demo-standalone.html"
                 ]
                 
                 static_analysis = {}

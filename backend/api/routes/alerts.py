@@ -19,6 +19,7 @@ from models.alert import (
     AlertFilterRequest, AlertEnrichmentRequest
 )
 from services.alert_service import AlertService
+from services.keep_client import KeepClient
 from services.deduplication_service import DeduplicationService
 from services.correlation_service import CorrelationService
 from services.enrichment_service import EnrichmentService
@@ -55,27 +56,77 @@ async def list_alerts(
 ):
     """List alerts with filtering and pagination"""
     try:
-        alert_service = AlertService(db)
-        alerts, total = await alert_service.list_alerts(
-            page=page,
-            page_size=page_size,
-            severity=severity,
-            status=status,
-            source=source,
-            search=search
-        )
-        
-        return AlertListResponse(
-            alerts=alerts,
-            total=total,
-            page=page,
-            page_size=page_size,
-            has_next=page * page_size < total,
-            has_previous=page > 1
-        )
+        keep = KeepClient()
+        if keep.is_configured():
+            # Keep-backed path
+            raw_alerts = await keep.fetch_alerts()
+            mapped = [KeepClient.map_keep_alert(a) for a in raw_alerts]
+            filtered = KeepClient.apply_filters(
+                mapped,
+                severity=severity,
+                status=status,
+                source=source,
+                search=search,
+            )
+            total = len(filtered)
+            start = (page - 1) * page_size
+            end = start + page_size
+            page_items = filtered[start:end]
+            return AlertListResponse(
+                alerts=page_items,  # type: ignore[arg-type]
+                total=total,
+                page=page,
+                page_size=page_size,
+                has_next=end < total,
+                has_previous=page > 1,
+            )
+        else:
+            # Local DB path
+            alert_service = AlertService(db)
+            alerts, total = await alert_service.list_alerts(
+                page=page,
+                page_size=page_size,
+                severity=severity,
+                status=status,
+                source=source,
+                search=search
+            )
+            
+            return AlertListResponse(
+                alerts=alerts,
+                total=total,
+                page=page,
+                page_size=page_size,
+                has_next=page * page_size < total,
+                has_previous=page > 1
+            )
     except Exception as e:
         logger.error(f"Failed to list alerts: {e}")
         raise HTTPException(status_code=500, detail="Failed to list alerts")
+
+
+@router.get("/advanced-filter", response_model=AlertListResponse)
+async def advanced_filter_alerts(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    severity: Optional[str] = None,
+    status: Optional[str] = None,
+    source: Optional[str] = None,
+    search: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Advanced filter endpoint; currently same behavior as list with server-side filtering.
+    Provided separately for frontend compatibility.
+    """
+    return await list_alerts(
+        page=page,
+        page_size=page_size,
+        severity=severity,
+        status=status,
+        source=source,
+        search=search,
+        db=db,
+    )
 
 
 @router.get("/{alert_id}", response_model=AlertResponse)

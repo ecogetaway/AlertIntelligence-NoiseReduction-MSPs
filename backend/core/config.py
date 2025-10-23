@@ -75,6 +75,11 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
     LOG_FORMAT: str = Field(default="json", env="LOG_FORMAT")
+
+    # Keep integration (optional)
+    KEEP_API_URL: Optional[str] = Field(default=None, env="KEEP_API_URL")
+    KEEP_API_KEY: Optional[str] = Field(default=None, env="KEEP_API_KEY")
+    KEEP_WEBHOOK_SECRET: Optional[str] = Field(default=None, env="KEEP_WEBHOOK_SECRET")
     
     class Config:
         env_file = ".env"

@@ -17,6 +17,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from api.routes import alerts, incidents, workflows, agents
+from api.routes import ingest_keep, test_keep_webhook
 from core.config import settings
 from core.database import init_db
 from core.middleware import LoggingMiddleware, ErrorHandlingMiddleware
@@ -116,6 +117,8 @@ app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["alerts"])
 app.include_router(incidents.router, prefix="/api/v1/incidents", tags=["incidents"])
 app.include_router(workflows.router, prefix="/api/v1/workflows", tags=["workflows"])
 app.include_router(agents.router, prefix="/api/v1/agents", tags=["agents"])
+app.include_router(ingest_keep.router, prefix="/api/v1", tags=["ingest"])
+app.include_router(test_keep_webhook.router, prefix="/api/v1", tags=["testing"]) 
 
 
 @app.get("/")

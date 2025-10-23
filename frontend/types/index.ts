@@ -13,6 +13,7 @@ export interface Alert {
   updated_at?: string
   resolved_at?: string
   created_at: string
+  assignee?: string
   enrichments: AlertEnrichment[]
   correlations: AlertCorrelation[]
   incident_id?: string
@@ -32,6 +33,13 @@ export interface AlertCorrelation {
   correlation_type: string
   confidence: number
   created_at: string
+}
+
+// Optional AI triage structure captured from Bedrock summarization
+export interface AlertAITriage {
+  severity_classification?: Alert['severity']
+  summary?: string
+  remediation_steps?: string[]
 }
 
 export interface Incident {
@@ -70,6 +78,13 @@ export interface AlertFilters {
   status?: string
   source?: string
   search?: string
+}
+
+export interface FilterPreset {
+  id: string
+  name: string
+  filters: AlertFilters
+  created_at: string
 }
 
 export interface AlertStats {

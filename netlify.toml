@@ -1,0 +1,33 @@
+[build]
+  publish = "."
+  command = "echo 'Static deployment - no build required'"
+
+[[redirects]]
+  from = "/"
+  to = "/keep-integration-demo-standalone.html"
+  status = 200
+
+[[redirects]]
+  from = "/prototype"
+  to = "/frontend-demo.html"
+  status = 200
+
+[[redirects]]
+  from = "/keep"
+  to = "/keep-integration-demo-standalone.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+

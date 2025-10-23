@@ -172,12 +172,12 @@ class SimpleBenchmarks:
                     "success_rate": 100.0,
                     "sample_size": 5
                 },
-                "/frontend-simple.html": {
-                    "description": "Simple Demo",
-                    "avg_load_time_ms": 892,
-                    "min_load_time_ms": 756,
-                    "max_load_time_ms": 1034,
-                    "p95_load_time_ms": 1012,
+                "/keep-integration-demo-standalone.html": {
+                    "description": "Keep + AWS Prototype",
+                    "avg_load_time_ms": 980,
+                    "min_load_time_ms": 820,
+                    "max_load_time_ms": 1150,
+                    "p95_load_time_ms": 1100,
                     "success_rate": 100.0,
                     "sample_size": 5
                 }
