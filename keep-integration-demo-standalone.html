@@ -28,7 +28,7 @@
                     <h1 class="text-3xl font-bold">Keep Integration Prototype</h1>
                     <p class="text-blue-100 mt-2">MSP Alert Intelligence Platform</p>
                 </div>
-                <div class="flex space-x-4">
+                <div class="flex space-x-2 items-center">
                     <span class="keep-badge text-white px-4 py-2 rounded-full text-sm font-medium">
                         💎 Keep Foundation
                     </span>
@@ -41,6 +41,8 @@
                     <span class="ai-badge text-white px-4 py-2 rounded-full text-sm font-medium">
                         🧠 Strands Agents
                     </span>
+                    <a href="#aws-tech" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded text-sm" aria-label="Jump to AWS Technologies">AWS Tech</a>
+                    <button onclick="handleOpenAwsModal()" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded text-sm" aria-label="Open AWS Demo">Open AWS Demo</button>
                 </div>
             </div>
         </div>
@@ -230,7 +232,7 @@
             </div>
 
             <!-- AWS Technologies Integration -->
-            <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-8 shadow-lg border border-orange-200 mb-16">
+            <div id="aws-tech" class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-8 shadow-lg border border-orange-200 mb-16">
                 <div class="text-center mb-8">
                     <div class="flex items-center justify-center mb-4">
                         <img src="https://a0.awsstatic.com/main/images/logos/aws_logo_smile_1200x630.png" alt="AWS" class="h-8 mr-4">
@@ -249,13 +251,14 @@
                             <h4 class="text-xl font-semibold ml-4">AWS Bedrock AI</h4>
                         </div>
                         <p class="text-gray-600 mb-4">Claude 3 Sonnet for intelligent alert triage and correlation</p>
-                        <div class="code-block text-sm">
+                        <div class="code-block text-sm relative group">
                             <div class="text-orange-400"># AWS Bedrock Integration</div>
                             <div class="text-gray-400">bedrock_client = boto3.client(</div>
                             <div class="text-blue-400">    'bedrock-runtime',</div>
                             <div class="text-blue-400">    region_name='us-east-1'</div>
                             <div class="text-gray-400">)</div>
                             <div class="text-green-400"># Claude 3 Sonnet for AI triage</div>
+                            <button class="absolute top-2 right-2 hidden group-hover:block text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded" onclick="handleCopyCode(this)">Copy</button>
                         </div>
                         <div class="mt-4 p-3 bg-orange-50 rounded-lg">
                             <div class="flex items-center text-orange-800">
@@ -274,13 +277,14 @@
                             <h4 class="text-xl font-semibold ml-4">Strands Agents SDK</h4>
                         </div>
                         <p class="text-gray-600 mb-4">Multi-agent orchestration for complex alert processing</p>
-                        <div class="code-block text-sm">
+                        <div class="code-block text-sm relative group">
                             <div class="text-orange-400"># Strands Agents Integration</div>
                             <div class="text-gray-400">strands_manager = StrandsAgentManager()</div>
                             <div class="text-blue-400">await strands_manager.invoke_agent(</div>
                             <div class="text-blue-400">    'multi_step_processor', payload</div>
                             <div class="text-gray-400">)</div>
                             <div class="text-green-400"># Multi-agent correlation</div>
+                            <button class="absolute top-2 right-2 hidden group-hover:block text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded" onclick="handleCopyCode(this)">Copy</button>
                         </div>
                         <div class="mt-4 p-3 bg-orange-50 rounded-lg">
                             <div class="flex items-center text-orange-800">
@@ -509,6 +513,40 @@
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
+
+        // Open AWS demo modal via header button
+        function handleOpenAwsModal() {
+            showAWSTechnologiesDemo();
+        }
+
+        // Copy code helper
+        function handleCopyCode(buttonEl) {
+            try {
+                const parent = buttonEl.parentElement;
+                const codeText = Array.from(parent.children)
+                    .filter(c => c.tagName === 'DIV')
+                    .map(c => c.textContent)
+                    .join('\n');
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const original = buttonEl.textContent;
+                    buttonEl.textContent = 'Copied';
+                    setTimeout(() => { buttonEl.textContent = original; }, 1200);
+                });
+            } catch (e) { /* no-op */ }
+        }
+
+        // Auto-open AWS modal once per user (localStorage flag)
+        (function autoOpenAwsOnce(){
+            try {
+                const key = 'awsDemoSeen';
+                if (!localStorage.getItem(key)) {
+                    setTimeout(() => {
+                        showAWSTechnologiesDemo();
+                        localStorage.setItem(key, '1');
+                    }, 600);
+                }
+            } catch (e) { /* ignore */ }
+        })();
 
         // Test Keep Integration with AWS Technologies (Simulated)
         async function testKeepIntegration() {
