@@ -5,7 +5,8 @@ Purpose: A comprehensive 5–7 minute flow showcasing the zero‑backend, "looks
 ## Demo URLs (Live)
 
 ### Primary Deployments (Enhanced v2.0)
-- **Netlify**: https://msp-alert-intelligence.netlify.app ⭐ **RECOMMENDED**
+- **Keep + AWS Integration**: https://msp-alert-intelligence.netlify.app/ ⭐ **RECOMMENDED**
+- **Dashboard**: https://msp-alert-intelligence.netlify.app/prototype ⭐ **LIVE MODE**
 - **Vercel**: https://msp-alert-app.vercel.app
 
 ### Local Testing (Latest Features)
@@ -15,7 +16,9 @@ Purpose: A comprehensive 5–7 minute flow showcasing the zero‑backend, "looks
 - **GitHub**: https://github.com/ecogetaway/AlertIntelligence-NoiseReduction-MSPs
 
 ### For Judges
-Use Netlify URL for the most stable experience. For latest features, use localhost:8080.
+Use Netlify URLs for the most stable experience:
+- **Keep Integration**: https://msp-alert-intelligence.netlify.app/ (AWS badges, webhook testing)
+- **Dashboard**: https://msp-alert-intelligence.netlify.app/prototype (Live Mode, advanced UI)
 
 ## 🆕 NEW FEATURES (Enhanced v2.0)
 
