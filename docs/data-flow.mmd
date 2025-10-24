@@ -10,20 +10,20 @@ flowchart TB
   end
 
   %% Keep layer
-  KEEP[Keep Platform\nWebhook + YAML workflows\n(HMAC shared secret)]
+  KEEP["Keep Platform<br/>Webhook + YAML workflows<br/>(HMAC shared secret)"]
   PROM --> KEEP
   DD --> KEEP
   PD --> KEEP
 
   %% Ingest
-  ING[FastAPI Ingest /api/v1/ingest/keep\nValidate + HMAC verify]
+  ING["FastAPI Ingest /api/v1/ingest/keep<br/>Validate + HMAC verify"]
   KEEP -->|JSON webhook| ING
 
   %% Processing
   MAP[Normalize/Map to MSP schema]
   DEDUP[Deduplicate + Rate-limit]
-  FILTER[Intelligent Filtering\n(noise suppression)]
-  CORR[AI Correlation & Triage\n(Bedrock + Strands)]
+  FILTER["Intelligent Filtering<br/>(noise suppression)"]
+  CORR["AI Correlation & Triage<br/>(Bedrock + Strands)"]
   DB[(PostgreSQL)]
   CACHE[(Redis)]
 
@@ -37,22 +37,22 @@ flowchart TB
   CORR --> STRANDS
 
   %% Delivery to UI
-  API[Read APIs: incidents, alerts, metrics]
+  API["Read APIs: incidents, alerts, metrics"]
   DB --> API
   CACHE --> API
-  UI[Next.js Dashboard\n(frontend-demo.html, prototype)]
+  UI["Next.js Dashboard<br/>frontend-demo.html & prototype"]
   API --> UI
 
   %% Prototype path (Live Mode)
   subgraph PROTO[Prototype – Live Mode]
     SIM[In-browser alert simulator]
-    UI2[Dashboard (Netlify)]
-    METRICS[Client-side metrics\n(noise %, dedup %, groups)]
+    UI2["Dashboard (Netlify)"]
+    METRICS["Client-side metrics<br/>noise %, dedup %, groups"]
   end
   SIM --> UI2 --> METRICS
 
   %% Notes
-  noteP["Prototype: No backend required; simulator feeds UI.\nProduction: Keep → FastAPI → Postgres → UI with AI services."]
+  noteP["Prototype: No backend required; simulator feeds UI.<br/>Production: Keep → FastAPI → Postgres → UI with AI services."]
   UI2 --- noteP
 
 

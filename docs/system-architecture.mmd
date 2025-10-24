@@ -5,18 +5,18 @@ flowchart LR
   %% Client and Hosting
   subgraph CLIENT[Client]
     J[Judges / Users]
-    UI[Next.js Dashboard\n(frontend-demo.html, prototype)]
+    UI["Next.js Dashboard<br/>frontend-demo.html & prototype"]
   end
 
   subgraph HOSTING[Hosting]
-    NETLIFY[Netlify Static Hosting\n(mspalerts.netlify.app)]
+    NETLIFY["Netlify Static Hosting<br/>mspalerts.netlify.app"]
   end
 
   J -- Browser --> NETLIFY --> UI
 
   %% Production backend path (optional in Live Mode)
   subgraph BACKEND[Backend Path (Production)]
-    ING[FastAPI Ingest API\n /api/v1/ingest/keep\n+ HMAC verify]
+    ING["FastAPI Ingest API<br/>/api/v1/ingest/keep<br/>HMAC verify"]
     MAP[Alert Mapping & Validation]
     FILT[Filtering & Deduplication]
     CORR[AI Correlation & Triage]
@@ -30,7 +30,7 @@ flowchart LR
   ING --> DB
 
   %% AI Services
-  subgraph AI[A I Services]
+  subgraph AI[AI Services]
     BEDROCK[AWS Bedrock\n(Claude 3 Sonnet)]
     STRANDS[Strands Agents\n(Orchestration)]
   end
@@ -61,7 +61,7 @@ flowchart LR
   PW --> UI
 
   %% Notes
-  noteN["Live Mode demo is frontend-only on Netlify;\nProduction path uses FastAPI + Postgres + AI services."]
+  noteN["Live Mode demo is frontend-only on Netlify;<br/>Production path uses FastAPI + Postgres + AI services."]
   UI --- noteN
 
 
